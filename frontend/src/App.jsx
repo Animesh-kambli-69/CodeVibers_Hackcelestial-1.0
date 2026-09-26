@@ -5,7 +5,6 @@ import { AuthProvider, useAuth } from './AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ROLE_HOME } from './lib/constants';
 
-import BookingSite from './pages/BookingSite';
 import LoginPage from './pages/LoginPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import ManagerDashboard from './pages/ManagerDashboard';
@@ -42,7 +41,6 @@ export default function App() {
         <Routes>
           {/* ── Public Routes ── */}
           <Route path="/" element={<RootRedirect />} />
-          <Route path="/book" element={<BookingSite />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
 
