@@ -45,13 +45,13 @@ data/processed/
 data/sample/
 
 # ── Trained Model Files ────────────────────────────────────
-app/models/*.pkl
-app/models/*.joblib
-app/models/*.h5
-app/models/*.pt
-app/models/*.onnx
-*.pkl
-*.joblib
+# app/models/*.pkl
+# app/models/*.joblib
+# app/models/*.h5
+# app/models/*.pt
+# app/models/*.onnx
+# *.pkl
+# *.joblib
 
 # ── MLflow / Experiment Tracking ───────────────────────────
 mlruns/
