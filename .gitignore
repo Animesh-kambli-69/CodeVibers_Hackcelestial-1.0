@@ -32,6 +32,9 @@ desktop.ini
 *.swp
 .history/
 
+# ── Node (root-level, if any) ───────────────────────────────
+node_modules/
+
 # ── Docker ─────────────────────────────────────────────────
 docker-compose.override.yml
 
@@ -41,6 +44,17 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# ── Database files ─────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
 
 # ── Scripts output ─────────────────────────────────────────
 scripts/output/
+
+# ── Temporary / misc ───────────────────────────────────────
+*.tmp
+*.bak
+*.orig

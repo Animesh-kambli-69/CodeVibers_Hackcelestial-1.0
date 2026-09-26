@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #F7F8F6;
+  --color-surface: #FFFFFF;
+  --color-border: #E5EAE7;
+  --color-text: #17201C;
+  --color-text-muted: #66716C;
+  --color-brand: #167A65;
+  --color-brand-soft: #DDEBE5;
+  --color-ai-accent: #5B63C7;
+  --color-ai-soft: #EEF0FB;
+  --color-risk-high: #C95C5C;
+  --color-risk-medium: #D89A32;
+  --color-risk-low: #3F8F70;
+  --color-forecast-line: #5B63C7;
+
+  --color-resort-bg: #F7F8F6;
+  --color-resort-surface: #FFFFFF;
+  --color-resort-text-primary: #17201C;
+  --color-resort-text-secondary: #66716C;
+  --color-resort-border: #E5EAE7;
+  --color-resort-emerald: #167A65;
+  --color-resort-emerald-hover: #126453;
+  --color-resort-emerald-soft: #DDEBE5;
+  --color-resort-emerald-light: #F0F7F4;
+  --color-resort-indigo: #5B63C7;
+  --color-resort-indigo-soft: #EEF0FB;
+  --color-resort-warning: #D89A32;
+  --color-resort-critical: #C95C5C;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Plus Jakarta Sans", sans-serif;
+}
+
+:root {
+  --bg: #F7F8F6;
+  --surface: #FFFFFF;
+  --border: #E5EAE7;
+  --text: #17201C;
+  --text-muted: #66716C;
+  --brand: #167A65;
+  --brand-soft: #DDEBE5;
+  --ai-accent: #5B63C7;
+  --ai-soft: #EEF0FB;
+  --risk-high: #C95C5C;
+  --risk-medium: #D89A32;
+  --risk-low: #3F8F70;
+  --forecast-line: #5B63C7;
+
+  /* Aliases for compatibility */
+  --bg-main: var(--bg);
+  --surface-card: var(--surface);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-muted);
+  --border-color: var(--border);
+  --emerald-primary: var(--brand);
+  --emerald-hover: #126453;
+  --emerald-soft: var(--brand-soft);
+  --emerald-light: #F0F7F4;
+  --indigo-accent: var(--ai-accent);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom focus and transition utilities */
+.input-focus-emerald:focus-within,
+.input-focus-emerald:focus {
+  border-color: #167A65 !important;
+  box-shadow: 0 0 0 3px rgba(22, 122, 101, 0.12);
+}
+
+.subtle-card-shadow {
+  box-shadow: 0 10px 30px -10px rgba(23, 32, 28, 0.05), 0 2px 6px -1px rgba(23, 32, 28, 0.03);
+}
+
+.luxury-badge {
+  background: rgba(22, 122, 101, 0.08);
+  border: 1px solid rgba(22, 122, 101, 0.2);
+  color: #167A65;
+}
+
+.ai-badge {
+  background: #EEF0FB;
+  border: 1px solid rgba(91, 99, 199, 0.2);
+  color: #5B63C7;
+}
+
+
