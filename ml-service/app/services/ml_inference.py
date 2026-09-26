@@ -22,6 +22,7 @@ CANCELLATION_FEATURES = [
     "Meal_enc", "Country_enc", "MarketSegment_enc",
     "DistributionChannel_enc", "DepositType_enc", "CustomerType_enc",
     "ReservedRoomType_enc", "ArrivalDateMonth_enc",
+    "TemperatureC", "PrecipitationMm", "WindSpeedKmh",
 ]
 
 OCCUPANCY_FEATURES = [
@@ -137,6 +138,9 @@ class MLModelService:
             "CustomerType_enc": self._safe_encode(self._encoders, "CustomerType", req.customer_type),
             "ReservedRoomType_enc": self._safe_encode(self._encoders, "ReservedRoomType", req.reserved_room_type),
             "ArrivalDateMonth_enc": self._safe_encode(self._encoders, "ArrivalDateMonth", req.arrival_date_month),
+            "TemperatureC": getattr(req, 'temperature_c', 25.0),
+            "PrecipitationMm": getattr(req, 'precipitation_mm', 0.0),
+            "WindSpeedKmh": getattr(req, 'wind_speed_kmh', 10.0),
         }
 
         X = pd.DataFrame([row])[CANCELLATION_FEATURES]
@@ -204,6 +208,7 @@ class MLModelService:
                 "IsWeekend": is_weekend, "IsHoliday": is_holiday,
                 "Lag7_TotalBookings": lag7, "Lag14_TotalBookings": lag14, "Lag30_TotalBookings": lag30,
                 "Roll7_AvgADR": roll7_adr, "Roll7_AvgLeadTime": roll7_lead,
+                "TemperatureC": 20.0, "PrecipitationMm": 0.0, "WindSpeedKmh": 10.0,
             }
             X = pd.DataFrame([row])[OCCUPANCY_FEATURES]
             pred_conf = max(0, float(self._occ_bookings_model.predict(X)[0]))

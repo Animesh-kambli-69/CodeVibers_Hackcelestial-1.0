@@ -25,25 +25,28 @@
     "DepositType_enc",
     "CustomerType_enc",
     "ReservedRoomType_enc",
-    "ArrivalDateMonth_enc"
+    "ArrivalDateMonth_enc",
+    "TemperatureC",
+    "PrecipitationMm",
+    "WindSpeedKmh"
   ],
   "target": "IsCanceled",
   "train_rows": 32036,
   "test_rows": 8010,
-  "roc_auc": 0.955,
-  "accuracy": 0.8888,
-  "baseline_auc": 0.8727,
+  "roc_auc": 0.9741,
+  "accuracy": 0.9262,
+  "baseline_auc": 0.9227,
   "feature_importances": {
-    "Country_enc": 0.1532,
-    "LeadTime": 0.1481,
-    "RequiredCarParkingSpaces": 0.0997,
-    "MarketSegment_enc": 0.0871,
-    "ADR": 0.0823,
-    "RoomTypeChanged": 0.0756,
-    "DepositType_enc": 0.0416,
-    "ArrivalDateMonth_enc": 0.0363,
-    "TotalOfSpecialRequests": 0.0348,
-    "TotalStays": 0.0346
+    "PrecipitationMm": 0.2009,
+    "LeadTime": 0.1171,
+    "Country_enc": 0.1025,
+    "WindSpeedKmh": 0.0812,
+    "RequiredCarParkingSpaces": 0.0703,
+    "MarketSegment_enc": 0.0566,
+    "ADR": 0.056,
+    "RoomTypeChanged": 0.0511,
+    "TemperatureC": 0.0508,
+    "DepositType_enc": 0.0311
   },
   "risk_thresholds": {
     "LOW": [

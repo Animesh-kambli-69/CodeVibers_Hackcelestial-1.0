@@ -19,6 +19,7 @@ CANCELLATION_FEATURES = [
     "Meal_enc", "Country_enc", "MarketSegment_enc",
     "DistributionChannel_enc", "DepositType_enc", "CustomerType_enc",
     "ReservedRoomType_enc", "ArrivalDateMonth_enc",
+    "TemperatureC", "PrecipitationMm", "WindSpeedKmh",
 ]
 
 OCCUPANCY_FEATURES = [
@@ -26,6 +27,7 @@ OCCUPANCY_FEATURES = [
     "IsWeekend", "IsHoliday",
     "Lag7_TotalBookings", "Lag14_TotalBookings", "Lag30_TotalBookings",
     "Roll7_AvgADR", "Roll7_AvgLeadTime",
+    "TemperatureC", "PrecipitationMm", "WindSpeedKmh",
 ]
 
 GUEST_PREF_FEATURES = [
