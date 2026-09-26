@@ -17,7 +17,7 @@ export function OccupancyAreaChart({ points = [], highOccupancyThreshold = 90, p
   const minVal = 60;
   const maxVal = 100;
 
-  const getX = (index) => margin.left + (index / (points.length - 1)) * width;
+  const getX = (index) => margin.left + (index / Math.max(1, points.length - 1)) * width;
   const getY = (val) => margin.top + height - ((val - minVal) / (maxVal - minVal)) * height;
 
   // Construct SVG paths

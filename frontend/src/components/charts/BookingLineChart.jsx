@@ -15,7 +15,7 @@ export function BookingLineChart({ history = [], points = [] }) {
   const minVal = 70;
   const maxVal = 105;
 
-  const getX = (index) => margin.left + (index / (allDays.length - 1)) * width;
+  const getX = (index) => margin.left + (index / Math.max(1, allDays.length - 1)) * width;
   const getY = (val) => margin.top + height - ((val - minVal) / (maxVal - minVal)) * height;
 
   return (
