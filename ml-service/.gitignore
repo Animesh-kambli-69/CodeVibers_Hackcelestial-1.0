@@ -1,5 +1,5 @@
 # ============================================================
-#  Smart Resort 360 — ML Service .gitignore
+#  Smart Resort 360 — ML Service .gitignore (Python / FastAPI)
 # ============================================================
 
 # ── Python Virtual Environment ─────────────────────────────
@@ -8,6 +8,11 @@ venv/
 env/
 ENV/
 .python-version
+
+# ── Environment & Secrets ──────────────────────────────────
+.env
+.env.*
+!.env.example
 
 # ── Python Cache & Bytecode ────────────────────────────────
 __pycache__/
@@ -34,7 +39,7 @@ htmlcov/
 .ipynb_checkpoints/
 notebooks/.ipynb_checkpoints/
 
-# ── ML Artifacts — Raw Data (large / private) ──────────────
+# ── ML Artifacts — Raw / Processed Data (large / private) ──
 data/raw/
 data/processed/
 data/sample/
@@ -45,6 +50,8 @@ app/models/*.joblib
 app/models/*.h5
 app/models/*.pt
 app/models/*.onnx
+*.pkl
+*.joblib
 
 # ── MLflow / Experiment Tracking ───────────────────────────
 mlruns/
@@ -57,3 +64,22 @@ dmypy.json
 
 # ── Ruff / Linting ─────────────────────────────────────────
 .ruff_cache/
+
+# ── OS Artifacts ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ───────────────────────────────────────────
+.vscode/
+.idea/
+*.sw?
+*.swp
+
+# ── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Temporary ──────────────────────────────────────────────
+*.tmp
+*.bak

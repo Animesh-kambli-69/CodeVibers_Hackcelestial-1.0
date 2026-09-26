@@ -1,36 +1,47 @@
 # ============================================================
-#  Smart Resort 360 — Backend .gitignore (Node.js / TypeScript)
+#  Smart Resort 360 — Backend .gitignore
 # ============================================================
 
 # ── Dependencies ───────────────────────────────────────────
 node_modules/
-.pnp
-.pnp.js
 
-# ── Build Output ───────────────────────────────────────────
+# ── Environment & Secrets ──────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Database files ─────────────────────────────────────────
+# SQLite (dev only — never commit DB files)
+*.sqlite
+*.sqlite3
+*.db
+
+# PostgreSQL dump files
+*.sql.gz
+*.dump
+
+# ── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── Build / dist ───────────────────────────────────────────
 dist/
 build/
-out/
 
-# ── TypeScript ─────────────────────────────────────────────
-*.tsbuildinfo
+# ── OS Artifacts ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# ── Testing ────────────────────────────────────────────────
-coverage/
-.nyc_output/
+# ── Editor / IDE ───────────────────────────────────────────
+.vscode/
+.idea/
+*.sw?
+*.swp
 
-# ── Package Manager Locks (keep one) ───────────────────────
-# Uncomment the one you are NOT using:
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
-
-# ── Runtime ────────────────────────────────────────────────
-*.pid
-*.seed
-*.pid.lock
-
-# ── Uploads / Temp Storage ─────────────────────────────────
-uploads/
-tmp/
-temp/
+# ── Temporary ──────────────────────────────────────────────
+*.tmp
+*.bak
