@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, TrendingUp, Sparkles, Users, AlertTriangle,
   DollarSign, MessageSquare, UserCheck, ClipboardList,
-  Settings, HelpCircle, LogOut, X, Lightbulb
+  Settings, HelpCircle, LogOut, X, Lightbulb, CloudRain
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { NAV_ITEMS, FEATURE_FLAGS } from '../lib/constants';
@@ -18,7 +18,8 @@ const ICON_MAP = {
   MessageSquare,
   UserCheck,
   ClipboardList,
-  Lightbulb
+  Lightbulb,
+  CloudRain
 };
 
 const BOTTOM_NAV = [

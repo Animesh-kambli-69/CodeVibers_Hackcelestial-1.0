@@ -5,6 +5,7 @@ import ManagerForecast from '../pages/ManagerForecast';
 import ManagerRecommendations from '../pages/ManagerRecommendations';
 import ManagerPricing from '../pages/ManagerPricing';
 import ManagerSentiment from '../pages/ManagerSentiment';
+import ManagerDigitalTwin from '../pages/ManagerDigitalTwin';
 
 export default function ManagerRoutes() {
   return (
@@ -14,6 +15,7 @@ export default function ManagerRoutes() {
       <Route path="recommendations" element={<ManagerRecommendations />} />
       <Route path="pricing" element={<ManagerPricing />} />
       <Route path="sentiment" element={<ManagerSentiment />} />
+      <Route path="digital-twin" element={<ManagerDigitalTwin />} />
     </Routes>
   );
 }

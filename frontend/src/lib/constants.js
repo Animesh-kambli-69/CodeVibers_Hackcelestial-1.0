@@ -21,6 +21,7 @@ export const NAV_ITEMS = {
     { label: 'Recommendations', path: '/manager/recommendations', icon: 'Sparkles', isP1: false },
     { label: 'Pricing', path: '/manager/pricing', icon: 'DollarSign', isP1: true },
     { label: 'Sentiment', path: '/manager/sentiment', icon: 'MessageSquare', isP1: true },
+    { label: 'Digital Twin', path: '/manager/digital-twin', icon: 'CloudRain', isP1: false },
   ],
   OPERATIONS_MANAGER: [
     { label: 'Dashboard', path: '/operations/dashboard', icon: 'LayoutDashboard', isP1: false },
