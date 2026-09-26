@@ -34,6 +34,20 @@ const env = Object.freeze({
   LLM_MODEL: process.env.LLM_MODEL || 'gemini-1.5-flash',
 
   RESORT_TIMEZONE: process.env.RESORT_TIMEZONE || 'Asia/Kolkata',
+
+  // Resort physical location — used by the Weather Digital Twin for live
+  // weather lookups and map visualization. Defaults to a Goa coastal resort
+  // (matches the seeded demo resort) so the feature works out of the box.
+  RESORT_LATITUDE: parseFloat(process.env.RESORT_LATITUDE || '15.2993'),
+  RESORT_LONGITUDE: parseFloat(process.env.RESORT_LONGITUDE || '74.1240'),
+  RESORT_NAME: process.env.RESORT_NAME || 'Smart Resort 360',
+
+  // Weather API (Open-Meteo — free, no API key required)
+  WEATHER_API_BASE_URL: process.env.WEATHER_API_BASE_URL || 'https://api.open-meteo.com/v1/forecast',
+
+  // Social signal source (Reddit public search JSON — free, no API key required)
+  SOCIAL_SIGNAL_API_BASE_URL: process.env.SOCIAL_SIGNAL_API_BASE_URL || 'https://www.reddit.com/search.json',
+  SOCIAL_SIGNAL_QUERY: process.env.SOCIAL_SIGNAL_QUERY || 'Goa weather travel resort',
 });
 
 module.exports = env;
