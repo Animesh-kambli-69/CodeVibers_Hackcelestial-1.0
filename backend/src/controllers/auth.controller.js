@@ -20,10 +20,17 @@ function createAuthController(authService) {
     return respond.ok(res, result);
   });
 
+  const changePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    await authService.changePassword(req.auth.userId, currentPassword, newPassword);
+    return respond.ok(res, { message: 'Password changed successfully' });
+  });
+
   return {
     login,
     logout,
     me,
+    changePassword,
   };
 }
 

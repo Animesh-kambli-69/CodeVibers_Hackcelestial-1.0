@@ -45,6 +45,18 @@ class UserRepository {
       createdAt: row.created_at,
     };
   }
+
+  async findPasswordHashById(id) {
+    const query = `SELECT password_hash FROM users WHERE id = $1 LIMIT 1;`;
+    const res = await this.pool.query(query, [id]);
+    if (res.rows.length === 0) return null;
+    return res.rows[0].password_hash;
+  }
+
+  async updatePassword(id, passwordHash) {
+    const query = `UPDATE users SET password_hash = $2 WHERE id = $1;`;
+    await this.pool.query(query, [id, passwordHash]);
+  }
 }
 
 module.exports = UserRepository;

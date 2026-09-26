@@ -7,6 +7,14 @@ const loginSchema = {
   }),
 };
 
+const changePasswordSchema = {
+  body: z.object({
+    currentPassword: z.string().min(1, { message: 'Current password is required' }),
+    newPassword: z.string().min(6, { message: 'New password must be at least 6 characters' }),
+  }),
+};
+
 module.exports = {
   loginSchema,
+  changePasswordSchema,
 };

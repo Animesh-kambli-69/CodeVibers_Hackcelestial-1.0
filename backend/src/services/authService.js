@@ -1,7 +1,7 @@
 /**
  * Authentication & User Service.
  */
-const { comparePassword } = require('../utils/password');
+const { comparePassword, hashPassword } = require('../utils/password');
 const { signToken } = require('../utils/jwt');
 const { UnauthorizedError, InternalError } = require('../utils/errors');
 
@@ -73,6 +73,25 @@ class AuthService {
       guestId: auth.guestId || null,
       name: guest ? guest.name : undefined,
     };
+  }
+
+  async changePassword(userId, currentPassword, newPassword) {
+    if (!currentPassword || !newPassword) {
+      throw new UnauthorizedError('Both current and new passwords are required', 'INVALID_INPUT');
+    }
+
+    const currentHash = await this.userRepository.findPasswordHashById(userId);
+    if (!currentHash) {
+      throw new UnauthorizedError('User not found', 'USER_NOT_FOUND');
+    }
+
+    const passwordMatch = await comparePassword(currentPassword, currentHash);
+    if (!passwordMatch) {
+      throw new UnauthorizedError('Incorrect current password', 'INVALID_CREDENTIALS');
+    }
+
+    const newHash = await hashPassword(newPassword);
+    await this.userRepository.updatePassword(userId, newHash);
   }
 }
 
