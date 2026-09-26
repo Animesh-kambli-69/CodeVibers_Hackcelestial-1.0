@@ -7,8 +7,13 @@ const {
   listRecommendationsQuerySchema,
   patchRecommendationSchema,
 } = require('../validators/manager.validators');
+const {
+  weatherQuerySchema,
+  socialSignalsQuerySchema,
+  simulateBodySchema,
+} = require('../validators/digitalTwin.validators');
 
-function createManagerRoutes(managerController) {
+function createManagerRoutes(managerController, digitalTwinController) {
   const router = express.Router();
 
   router.get('/dashboard', managerController.getDashboard);
@@ -18,6 +23,14 @@ function createManagerRoutes(managerController) {
   router.get('/room-demand', validate(roomDemandQuerySchema), managerController.getRoomDemand);
   router.get('/recommendations', validate(listRecommendationsQuerySchema), managerController.listRecommendations);
   router.patch('/recommendations/:recommendationId', validate(patchRecommendationSchema), managerController.patchRecommendation);
+
+  // Weather-Driven Digital Twin
+  if (digitalTwinController) {
+    router.get('/digital-twin/weather', validate(weatherQuerySchema), digitalTwinController.getWeather);
+    router.get('/digital-twin/social-signals', validate(socialSignalsQuerySchema), digitalTwinController.getSocialSignals);
+    router.get('/digital-twin/state', digitalTwinController.getState);
+    router.post('/digital-twin/simulate', validate(simulateBodySchema), digitalTwinController.simulate);
+  }
 
   return router;
 }

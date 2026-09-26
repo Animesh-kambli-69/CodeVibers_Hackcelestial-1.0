@@ -42,6 +42,7 @@ const RecommendationCategory = Object.freeze({
   STAFFING: 'STAFFING',
   GUEST_EXPERIENCE: 'GUEST_EXPERIENCE',
   MAINTENANCE: 'MAINTENANCE',
+  WEATHER: 'WEATHER',
 });
 
 const RecommendationPriority = Object.freeze({
