@@ -1,0 +1,59 @@
+# ============================================================
+#  Smart Resort 360 — ML Service .gitignore
+# ============================================================
+
+# ── Python Virtual Environment ─────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.python-version
+
+# ── Python Cache & Bytecode ────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# ── Distribution / Build ───────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# ── Pytest & Coverage ──────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+# ── Jupyter Notebooks ──────────────────────────────────────
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# ── ML Artifacts — Raw Data (large / private) ──────────────
+data/raw/
+data/processed/
+data/sample/
+
+# ── Trained Model Files ────────────────────────────────────
+app/models/*.pkl
+app/models/*.joblib
+app/models/*.h5
+app/models/*.pt
+app/models/*.onnx
+
+# ── MLflow / Experiment Tracking ───────────────────────────
+mlruns/
+mlartifacts/
+
+# ── Type Checking ──────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ── Ruff / Linting ─────────────────────────────────────────
+.ruff_cache/

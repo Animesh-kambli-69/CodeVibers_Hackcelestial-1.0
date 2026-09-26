@@ -1,0 +1,36 @@
+# ============================================================
+#  Smart Resort 360 — Backend .gitignore (Node.js / TypeScript)
+# ============================================================
+
+# ── Dependencies ───────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Build Output ───────────────────────────────────────────
+dist/
+build/
+out/
+
+# ── TypeScript ─────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Testing ────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Package Manager Locks (keep one) ───────────────────────
+# Uncomment the one you are NOT using:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ── Runtime ────────────────────────────────────────────────
+*.pid
+*.seed
+*.pid.lock
+
+# ── Uploads / Temp Storage ─────────────────────────────────
+uploads/
+tmp/
+temp/

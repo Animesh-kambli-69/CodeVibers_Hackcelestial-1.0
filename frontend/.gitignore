@@ -1,0 +1,33 @@
+# ============================================================
+#  Smart Resort 360 — Frontend .gitignore (Next.js / React)
+# ============================================================
+
+# ── Dependencies ───────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Next.js Build Output ───────────────────────────────────
+.next/
+out/
+dist/
+build/
+
+# ── Cache ──────────────────────────────────────────────────
+.turbo/
+.cache/
+.eslintcache
+
+# ── TypeScript ─────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Testing ────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Static / Generated Assets ──────────────────────────────
+public/generated/
+
+# ── Storybook ──────────────────────────────────────────────
+storybook-static/
