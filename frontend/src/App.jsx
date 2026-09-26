@@ -7,25 +7,13 @@ import { ROLE_HOME } from './lib/constants';
 
 import LoginPage from './pages/LoginPage';
 import ForbiddenPage from './pages/ForbiddenPage';
-import ManagerDashboard from './pages/ManagerDashboard';
-import ManagerForecast from './pages/ManagerForecast';
-import ManagerRecommendations from './pages/ManagerRecommendations';
-import ManagerPricing from './pages/ManagerPricing';
-import ManagerSentiment from './pages/ManagerSentiment';
-
-import OperationsDashboard from './pages/OperationsDashboard';
-import GuestList from './pages/GuestList';
-import GuestProfile from './pages/GuestProfile';
-import CancellationRisk from './pages/CancellationRisk';
-import OperationsStaffing from './pages/OperationsStaffing';
-import OperationsRequests from './pages/OperationsRequests';
-
-import GuestHome from './pages/GuestHome';
-import GuestConcierge from './pages/GuestConcierge';
-import GuestProfilePage from './pages/GuestProfilePage';
-import GuestRequests from './pages/GuestRequests';
-
+import ManagerSettings from './pages/ManagerSettings';
 import { DataEntryDashboard, GuestDashboard } from './pages/Dashboards';
+import ManagerDashboard from './pages/ManagerDashboard';
+
+import ManagerRoutes from './routes/ManagerRoutes';
+import OperationsRoutes from './routes/OperationsRoutes';
+import GuestRoutes from './routes/GuestRoutes';
 
 function RootRedirect() {
   const { user } = useAuth();
@@ -44,99 +32,44 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
 
-          {/* ── Manager Role (P0 + P1) ── */}
-          <Route path="/manager/dashboard" element={
+          {/* ── Modular Role Routes ── */}
+          <Route path="/manager/*" element={
             <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerDashboard />
+              <ManagerRoutes />
             </ProtectedRoute>
           } />
-          <Route path="/manager/forecast" element={
-            <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerForecast />
+          
+          <Route path="/operations/*" element={
+            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
+              <OperationsRoutes />
             </ProtectedRoute>
           } />
-          <Route path="/manager/recommendations" element={
-            <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerRecommendations />
+          
+          <Route path="/guest/*" element={
+            <ProtectedRoute allowedRole="GUEST">
+              <GuestRoutes />
             </ProtectedRoute>
           } />
-          <Route path="/manager/pricing" element={
+
+          {/* ── Top-Level / Legacy Routes ── */}
+          <Route path="/settings" element={
             <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerPricing />
+              <ManagerSettings />
             </ProtectedRoute>
           } />
-          <Route path="/manager/sentiment" element={
-            <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerSentiment />
-            </ProtectedRoute>
-          } />
-          {/* Legacy fallback */}
+          
           <Route path="/dashboard/manager" element={
             <ProtectedRoute allowedRole="RESORT_MANAGER">
               <ManagerDashboard />
             </ProtectedRoute>
           } />
-
-          {/* ── Operations Role (P0 + P1) ── */}
-          <Route path="/operations/dashboard" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <OperationsDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/operations/guests" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <GuestList />
-            </ProtectedRoute>
-          } />
-          <Route path="/operations/guests/:guestId" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <GuestProfile />
-            </ProtectedRoute>
-          } />
-          <Route path="/operations/cancellations" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <CancellationRisk />
-            </ProtectedRoute>
-          } />
-          <Route path="/operations/staffing" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <OperationsStaffing />
-            </ProtectedRoute>
-          } />
-          <Route path="/operations/requests" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <OperationsRequests />
-            </ProtectedRoute>
-          } />
-          {/* Legacy fallback */}
+          
           <Route path="/dashboard/data-entry" element={
             <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
               <DataEntryDashboard />
             </ProtectedRoute>
           } />
-
-          {/* ── Guest Role (P0 + P1) ── */}
-          <Route path="/guest/home" element={
-            <ProtectedRoute allowedRole="GUEST">
-              <GuestHome />
-            </ProtectedRoute>
-          } />
-          <Route path="/guest/concierge" element={
-            <ProtectedRoute allowedRole="GUEST">
-              <GuestConcierge />
-            </ProtectedRoute>
-          } />
-          <Route path="/guest/profile" element={
-            <ProtectedRoute allowedRole="GUEST">
-              <GuestProfilePage />
-            </ProtectedRoute>
-          } />
-          <Route path="/guest/requests" element={
-            <ProtectedRoute allowedRole="GUEST">
-              <GuestRequests />
-            </ProtectedRoute>
-          } />
-          {/* Legacy fallback */}
+          
           <Route path="/dashboard/guest" element={
             <ProtectedRoute allowedRole="GUEST">
               <GuestDashboard />
