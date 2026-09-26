@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Sparkles, Calendar, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import './App.css';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -19,7 +22,7 @@ export default function App() {
     setLoading(true);
     try {
       // POST directly to the Node.js backend public endpoint!
-      const response = await fetch('http://localhost:5000/api/public/bookings', {
+      const response = await fetch(`${BACKEND_URL}/api/public/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -51,7 +54,7 @@ export default function App() {
           <span style={{ cursor: 'pointer' }}>Rooms</span>
           <span style={{ cursor: 'pointer' }}>Dining</span>
           <span style={{ cursor: 'pointer' }}>Spa</span>
-          <a href="http://localhost:5173/login" target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 700 }}>Staff Login</a>
+          <a href={`${FRONTEND_URL}/login`} target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', textDecoration: 'none', fontWeight: 700 }}>Staff Login</a>
         </div>
       </nav>
 
