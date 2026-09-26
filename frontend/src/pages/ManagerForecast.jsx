@@ -32,9 +32,36 @@ export default function ManagerForecast() {
         apiRequest('/manager/room-demand')
       ]);
 
-      setOccupancyData(occRes.data);
-      setBookingData(bookRes.data);
-      setDemandData(demandRes.data);
+      // Normalize occupancy data (mock uses .points and .occupancy, backend uses .forecast and .predictedOccupancy)
+      const occRaw = occRes.data || {};
+      const occPoints = occRaw.forecast || occRaw.points || [];
+      setOccupancyData({
+        ...occRaw,
+        points: occPoints.map(p => ({
+          ...p,
+          occupancy: p.occupancy ?? p.predictedOccupancy,
+          day: p.day || p.dayOfWeek || new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        })),
+        peakDay: occRaw.peak || occRaw.peakDay,
+      });
+
+      // Normalize booking data (mock uses .points, backend uses .forecast)
+      const bookRaw = bookRes.data || {};
+      const bookPoints = bookRaw.forecast || bookRaw.points || [];
+      setBookingData({
+        ...bookRaw,
+        points: bookPoints.map(p => ({
+          ...p,
+          day: p.day || p.dayOfWeek || new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        })),
+        history: (bookRaw.history || []).map(h => ({
+          ...h,
+          day: h.day || new Date(h.date).toLocaleDateString('en-US', { weekday: 'short' }),
+        }))
+      });
+
+      // Normalize demand data (mock is array, backend is { roomDemands: array })
+      setDemandData(demandRes.data?.roomDemands || demandRes.data || []);
     } catch (err) {
       console.error('Failed to load forecast data:', err);
       setError('Unable to retrieve latest forecast data.');
