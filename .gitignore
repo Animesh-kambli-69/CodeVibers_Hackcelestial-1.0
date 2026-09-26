@@ -56,6 +56,20 @@ yarn-error.log*
 pnpm-debug.log*
 
 # OS & IDE
+# ============================================================
+#  Smart Resort 360 — Root .gitignore
+# ============================================================
+
+# ── Environment & Secrets ──────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+
+# ── OS Artifacts ───────────────────────────────────────────
 .DS_Store
 .DS_Store?
 ._*
@@ -63,7 +77,28 @@ pnpm-debug.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
-.idea/
+desktop.ini
+
+# ── Editor / IDE ───────────────────────────────────────────
 .vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 *.swp
-*.swo
+.history/
+
+# ── Docker ─────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Scripts output ─────────────────────────────────────────
+scripts/output/

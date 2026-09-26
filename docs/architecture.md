@@ -1,4 +1,4 @@
-# System Architecture
+# Smart Resort 360 — System Architecture
 
 ## Smart Resort 360
 # Smart Resort 360 — Architecture

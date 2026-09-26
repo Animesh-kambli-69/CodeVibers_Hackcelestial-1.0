@@ -1,0 +1,63 @@
+{
+  "model": "RandomForestClassifier",
+  "version": "1.0.0",
+  "features": [
+    "LeadTime",
+    "Adults",
+    "Children",
+    "Babies",
+    "TotalGuests",
+    "StaysInWeekendNights",
+    "StaysInWeekNights",
+    "TotalStays",
+    "PreviousCancellations",
+    "PreviousBookingsNotCanceled",
+    "BookingChanges",
+    "RequiredCarParkingSpaces",
+    "TotalOfSpecialRequests",
+    "ADR",
+    "IsRepeatedGuest",
+    "RoomTypeChanged",
+    "Meal_enc",
+    "Country_enc",
+    "MarketSegment_enc",
+    "DistributionChannel_enc",
+    "DepositType_enc",
+    "CustomerType_enc",
+    "ReservedRoomType_enc",
+    "ArrivalDateMonth_enc"
+  ],
+  "target": "IsCanceled",
+  "train_rows": 32036,
+  "test_rows": 8010,
+  "roc_auc": 0.955,
+  "accuracy": 0.8888,
+  "baseline_auc": 0.8727,
+  "feature_importances": {
+    "Country_enc": 0.1532,
+    "LeadTime": 0.1481,
+    "RequiredCarParkingSpaces": 0.0997,
+    "MarketSegment_enc": 0.0871,
+    "ADR": 0.0823,
+    "RoomTypeChanged": 0.0756,
+    "DepositType_enc": 0.0416,
+    "ArrivalDateMonth_enc": 0.0363,
+    "TotalOfSpecialRequests": 0.0348,
+    "TotalStays": 0.0346
+  },
+  "risk_thresholds": {
+    "LOW": [
+      0.0,
+      0.35
+    ],
+    "MEDIUM": [
+      0.35,
+      0.7
+    ],
+    "HIGH": [
+      0.7,
+      1.0
+    ]
+  },
+  "data_source": "H1.csv (Resort Hotel) \u2014 Real data only"
+}
