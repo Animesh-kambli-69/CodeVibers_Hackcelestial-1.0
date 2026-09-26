@@ -41,7 +41,7 @@ notebooks/.ipynb_checkpoints/
 
 # ── ML Artifacts — Raw / Processed Data (large / private) ──
 data/raw/
-data/processed/
+# data/processed/
 data/sample/
 
 # ── Trained Model Files ────────────────────────────────────
