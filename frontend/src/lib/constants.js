@@ -1,13 +1,13 @@
 export const ROLES = {
-  MANAGER: 'manager',
-  OPS: 'data_entry',
-  GUEST: 'guest',
+  MANAGER: 'RESORT_MANAGER',
+  OPS: 'OPERATIONS_MANAGER',
+  GUEST: 'GUEST',
 };
 
 export const ROLE_HOME = {
-  manager: '/manager/dashboard',
-  data_entry: '/operations/dashboard',
-  guest: '/guest/home',
+  RESORT_MANAGER: '/manager/dashboard',
+  OPERATIONS_MANAGER: '/operations/dashboard',
+  GUEST: '/guest/home',
 };
 
 export const FEATURE_FLAGS = {

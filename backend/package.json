@@ -23,6 +23,7 @@
   "author": "CodeVibers",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^2.24.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",

@@ -16,10 +16,16 @@ export default function GuestRequests() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      // Simulate endpoint or fetch
-      setRequests([
-        { id: 'req-101', type: 'Late Check-in Note', status: 'PENDING', time: 'Today, 2:30 PM', description: 'Expected arrival around 9:00 PM.' }
-      ]);
+      const res = await apiRequest('/guest/service-requests');
+      // Map the backend/mock data to the expected frontend format
+      const mappedReqs = res.data.map(r => ({
+        id: r.id,
+        type: r.type,
+        status: r.status,
+        time: r.requestedAt || 'Recently',
+        description: r.description || 'Service request'
+      }));
+      setRequests(mappedReqs);
     } catch (err) {
       console.error('Failed to load guest requests:', err);
     } finally {
@@ -31,21 +37,34 @@ export default function GuestRequests() {
     fetchRequests();
   }, []);
 
-  const handleCreateRequest = (e) => {
+  const handleCreateRequest = async (e) => {
     e.preventDefault();
     if (!description.trim()) return;
 
-    const newReq = {
-      id: `req-${Date.now().toString().slice(-4)}`,
-      type: requestType,
-      status: 'PENDING',
-      time: 'Just now',
-      description: description.trim()
-    };
-
-    setRequests((prev) => [newReq, ...prev]);
-    setDescription('');
-    setShowModal(false);
+    try {
+      const res = await apiRequest('/guest/service-requests', {
+        method: 'POST',
+        body: JSON.stringify({
+          type: requestType,
+          description: description.trim()
+        })
+      });
+      
+      const r = res.data;
+      const newReq = {
+        id: r.id,
+        type: r.type,
+        status: r.status,
+        time: r.requestedAt,
+        description: r.description
+      };
+      
+      setRequests((prev) => [newReq, ...prev]);
+      setDescription('');
+      setShowModal(false);
+    } catch (err) {
+      console.error('Failed to submit request', err);
+    }
   };
 
   return (

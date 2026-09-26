@@ -59,6 +59,42 @@ export default function GuestHome() {
   };
 
   const stay = profile?.currentStay;
+  
+  // Calculate dynamic personalized offer based on preferences
+  const preferences = profile?.preferences || [];
+  const hasSpaPref = preferences.some(p => (p.preferenceValue || '').toLowerCase().includes('spa') || (p.preferenceValue || '').toLowerCase().includes('massage'));
+  const hasDiningPref = preferences.some(p => (p.preferenceValue || '').toLowerCase().includes('vegetarian') || (p.preferenceValue || '').toLowerCase().includes('vegan'));
+  
+  let personalizedOffer = null;
+  if (hasSpaPref) {
+    personalizedOffer = {
+      title: 'Exclusive 15% Off Spa Services',
+      description: 'Because you love relaxation, enjoy a discount on any massage booked today.',
+      icon: '✨',
+      color: '#FDF2F8',
+      textColor: '#9D174D',
+      borderColor: '#FCE7F3'
+    };
+  } else if (hasDiningPref) {
+    personalizedOffer = {
+      title: 'Complimentary Dessert',
+      description: 'Since you enjoy our vegetarian menu, dessert is on us tonight at The Greenhouse.',
+      icon: '🍽️',
+      color: '#F0FDF4',
+      textColor: '#166534',
+      borderColor: '#DCFCE7'
+    };
+  } else {
+    // Default fallback offer if no specific preference triggers
+    personalizedOffer = {
+      title: 'Happy Hour at Sunset Lounge',
+      description: 'Join us from 5 PM - 7 PM for 2-for-1 signature cocktails.',
+      icon: '🍸',
+      color: '#FFFBEB',
+      textColor: '#B45309',
+      borderColor: '#FEF3C7'
+    };
+  }
 
   return (
     <GuestLayout title="Resort Guest Portal">
@@ -115,6 +151,46 @@ export default function GuestHome() {
               </div>
             )}
           </div>
+
+          {/* Personalized Dynamic Offer (Decision Engine) */}
+          {personalizedOffer && (
+            <div style={{
+              backgroundColor: personalizedOffer.color,
+              border: `1px solid ${personalizedOffer.borderColor}`,
+              borderRadius: 14,
+              padding: '16px 20px',
+              marginBottom: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 16
+            }}>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <div style={{ fontSize: 28 }}>{personalizedOffer.icon}</div>
+                <div>
+                  <h4 style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: personalizedOffer.textColor }}>
+                    {personalizedOffer.title}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: 13, color: personalizedOffer.textColor, opacity: 0.9 }}>
+                    {personalizedOffer.description}
+                  </p>
+                </div>
+              </div>
+              <button style={{
+                padding: '8px 16px',
+                backgroundColor: personalizedOffer.textColor,
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: 20,
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}>
+                Claim Offer
+              </button>
+            </div>
+          )}
 
           {/* Ask AI Concierge Box */}
           <div style={{

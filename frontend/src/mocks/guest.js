@@ -79,21 +79,27 @@ export const resortInfoCatalog = [
 
 export const chatMockResponses = {
   defaultGrounded: {
-    message: "Welcome Rahul! For a relaxing evening, I highly recommend our Sunset Yoga session at North Cove Beach at 5:30 PM, followed by an Ayurvedic Spa session. We also have delicious organic vegetarian dining at Saffron Fine Dining open until 11:00 PM.",
-    grounded: true,
     conversationId: "conv-9901",
-    usedPreferences: ["Vegetarian", "Spa"],
-    sources: [
-      { id: "info-1", title: "Ananda Ayurvedic Spa & Wellness", category: "Spa" },
-      { id: "info-3", title: "Saffron Fine Dining & Veg Kitchen", category: "Restaurants" },
-      { id: "info-4", title: "Sunset Beach Yoga & Meditation", category: "Activities" }
-    ]
+    reply: {
+      id: "reply-1",
+      content: "Welcome Rahul! For a relaxing evening, I highly recommend our Sunset Yoga session at North Cove Beach at 5:30 PM, followed by an Ayurvedic Spa session. We also have delicious organic vegetarian dining at Saffron Fine Dining open until 11:00 PM.",
+      grounded: true,
+      usedPreferences: ["Vegetarian", "Spa"],
+      sources: [
+        { id: "info-1", title: "Ananda Ayurvedic Spa & Wellness", category: "Spa" },
+        { id: "info-3", title: "Saffron Fine Dining & Veg Kitchen", category: "Restaurants" },
+        { id: "info-4", title: "Sunset Beach Yoga & Meditation", category: "Activities" }
+      ]
+    }
   },
   ungroundedFallback: {
-    message: "I don't have verified details about a helipad at the resort in our resort guide. Please check directly with our Front Desk concierge team for special transport arrangements.",
-    grounded: false,
     conversationId: "conv-9901",
-    usedPreferences: [],
-    sources: []
+    reply: {
+      id: "reply-2",
+      content: "I don't have verified details about a helipad at the resort in our resort guide. Please check directly with our Front Desk concierge team for special transport arrangements.",
+      grounded: false,
+      usedPreferences: [],
+      sources: []
+    }
   }
 };

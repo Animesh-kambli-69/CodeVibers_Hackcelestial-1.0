@@ -69,11 +69,11 @@ export default function GuestConcierge() {
       if (replyData.conversationId) setConversationId(replyData.conversationId);
 
       const assistantMsg = {
-        id: Date.now() + 1,
+        id: replyData.reply?.id || Date.now() + 1,
         sender: 'assistant',
-        text: replyData.message,
-        grounded: replyData.grounded !== false,
-        sources: replyData.sources || []
+        text: replyData.reply?.content || 'Error: No message content',
+        grounded: replyData.reply?.grounded !== false,
+        sources: replyData.reply?.sources || []
       };
 
       setMessages((prev) => [...prev, assistantMsg]);

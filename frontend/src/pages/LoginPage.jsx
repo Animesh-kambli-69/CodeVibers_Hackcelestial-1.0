@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { Eye, EyeOff, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { apiRequest } from '../lib/api';
 
 /* ─── Brand mark ─── */
 function BrandMark() {
@@ -164,22 +165,20 @@ export default function LoginPage() {
     if (!emailValid) { setError('Please enter a valid email address.'); return; }
     setError(''); setLoading(true);
     try {
-      const res = await fetch('http://localhost:3001/api/login', {
+      const res = await apiRequest('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ loginType: 'staff', username: email, password }),
+        body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (data.success) {
-        login(data);
-        if (data.user.role === 'manager') navigate('/manager/dashboard');
-        else if (data.user.role === 'data_entry') navigate('/operations/dashboard');
+      if (res.data && res.data.token) {
+        login(res.data);
+        if (res.data.user.role === 'RESORT_MANAGER') navigate('/manager/dashboard');
+        else if (res.data.user.role === 'OPERATIONS_MANAGER') navigate('/operations/dashboard');
         else navigate('/guest/home');
       } else {
-        setError(data.message || 'Invalid credentials.');
+        setError('Invalid credentials.');
       }
-    } catch {
-      setError('Cannot reach server. Please try again.');
+    } catch (err) {
+      setError(err.message || 'Cannot reach server. Please try again.');
     } finally {
       setLoading(false);
     }

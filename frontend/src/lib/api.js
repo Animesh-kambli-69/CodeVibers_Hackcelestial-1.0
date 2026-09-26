@@ -59,6 +59,28 @@ async function resolveMock(path, init = {}) {
   if (cleanPath === '/guest/preferences') return { data: guestPreferences };
   if (cleanPath === '/guest/bookings') return { data: guestBookings };
   if (cleanPath === '/guest/resort-info') return { data: resortInfoCatalog };
+  if (cleanPath === '/guest/service-requests') {
+    if (init.method === 'POST') {
+      const body = init.body ? JSON.parse(init.body) : {};
+      const newReq = {
+        id: `req-${Date.now().toString().slice(-4)}`,
+        guestName: guestProfile.name,
+        roomNumber: guestProfile.currentStay.roomNumber,
+        type: body.type,
+        status: 'PENDING',
+        description: body.description,
+        requestedAt: 'Just now',
+        isGuestView: true
+      };
+      // Push to the global operations mock array so it appears on the Ops Dashboard!
+      serviceRequestsData.unshift(newReq);
+      return { data: newReq };
+    } else {
+      // GET requests for the guest
+      const guestReqs = serviceRequestsData.filter(r => r.guestName === guestProfile.name);
+      return { data: guestReqs };
+    }
+  }
   if (cleanPath === '/guest/chat') {
     const body = init.body ? JSON.parse(init.body) : {};
     const text = (body.message || '').toLowerCase();
@@ -73,9 +95,19 @@ async function resolveMock(path, init = {}) {
 }
 
 export async function apiRequest(path, init = {}) {
-  if (import.meta.env.VITE_USE_MOCKS === 'true') {
+  const cleanPath = path.split('?')[0];
+  const phase2Endpoints = [
+    '/manager/pricing-recommendations',
+    '/manager/sentiment',
+    '/operations/staffing',
+    '/operations/service-requests',
+    '/guest/service-requests'
+  ];
+
+  if (import.meta.env.VITE_USE_MOCKS === 'true' || phase2Endpoints.includes(cleanPath)) {
     return resolveMock(path, init);
   }
+
   const token = localStorage.getItem('resortToken');
   const res = await fetch(`${BASE}/api${path}`, {
     ...init,

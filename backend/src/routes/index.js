@@ -1,5 +1,6 @@
 const express = require('express');
 const createHealthRouter = require('./health.routes');
+const createPublicRoutes = require('./public.routes');
 const authenticate = require('../middleware/auth');
 const requireRole = require('../middleware/roleCheck');
 const rejectGuestIdInput = require('../middleware/rejectGuestIdInput');
@@ -9,6 +10,7 @@ function createApiRouter(deps = {}) {
 
   // Public / Health probe
   router.use('/health', createHealthRouter(deps));
+  router.use('/public', createPublicRoutes());
 
   // Auth Routes (Public + Authenticated)
   if (deps.authRouter) {

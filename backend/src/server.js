@@ -5,8 +5,8 @@ const createApp = require('./app');
 // In Phase 1, DB pool / ML client can be instantiated or injected
 const app = createApp({});
 
-const server = app.listen(env.PORT, () => {
-  logger.info(`Smart Resort 360 Backend listening on port ${env.PORT} [${env.NODE_ENV}]`);
+const server = app.listen(env.PORT, '0.0.0.0', () => {
+  logger.info(`Smart Resort 360 Backend listening on port ${env.PORT} [${env.NODE_ENV}] (bound to 0.0.0.0)`);
 });
 
 // Graceful shutdown handling

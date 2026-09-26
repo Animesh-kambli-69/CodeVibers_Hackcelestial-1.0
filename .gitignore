@@ -65,6 +65,7 @@ pnpm-debug.log*
 .env.*
 !.env.example
 *.pem
+r1.pem
 *.key
 *.crt
 secrets/

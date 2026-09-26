@@ -13,11 +13,13 @@ export function AuthProvider({ children }) {
   const login = (data) => {
     setUser({ ...data.user, token: data.token });
     localStorage.setItem('resortUser', JSON.stringify({ ...data.user, token: data.token }));
+    localStorage.setItem('resortToken', data.token);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('resortUser');
+    localStorage.removeItem('resortToken');
   };
 
   return (
