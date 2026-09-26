@@ -1,0 +1,45 @@
+{
+  "name": "smart-resort-360-backend",
+  "version": "1.0.0",
+  "description": "Smart Resort 360 - AI-Powered Resort Intelligence & Decision Support Backend",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch --env-file=.env src/server.js",
+    "test": "jest --runInBand",
+    "test:unit": "jest tests/unit",
+    "test:service": "jest tests/service",
+    "test:api": "jest tests/api --runInBand",
+    "db:migrate": "node db/migrate.js",
+    "db:seed": "node db/seed.js"
+  },
+  "keywords": [
+    "resort",
+    "intelligence",
+    "decision-engine",
+    "express",
+    "postgresql"
+  ],
+  "author": "CodeVibers",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.3",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

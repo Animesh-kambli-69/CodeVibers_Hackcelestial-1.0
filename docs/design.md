@@ -273,7 +273,8 @@ A mobile-first, consumer-style app. No sidebar.
 
 - **Controls → query params:** horizon → `days`, room type → `roomType`. Keep them in the URL (`?days=14&roomType=DELUXE`) so the view is shareable.
 - **API:** `GET /api/manager/booking-forecast`, `/occupancy-forecast`, `/room-demand`
-- Footer: "Model: `{modelVersion}` · Confidence {confidence as %}"
+- Footer: "Model: `{modelVersion}` · Confidence {confidence as %}". Hide the confidence part when `confidence` is `null`; ML v1 returns none (decision C-03).
+- **Room type selector:** ML v1 forecasts the whole resort only, so the backend returns `400` (`issue: "not_supported"`) when `roomType` is sent. Render the selector disabled with the tooltip "Room-type forecast not available yet" until that changes (decision C-27).
 
 ### 6.3 Recommendations — `/manager/recommendations`
 
@@ -407,6 +408,7 @@ A table built from `GET /api/manager/pricing-recommendations`: Room type | Curre
 - Load the four requests in parallel. The profile request gates the page (404 → "Guest not found").
 - If `cancellation` is null, show "No upcoming booking". If `predictionStatus` is UNAVAILABLE, use the standard unavailable state (§11).
 - Show the `source` of each preference as a small chip: `EXPLICIT` = "Stated", `HISTORY` = "From history", `PREDICTED` = "Predicted ✦".
+- **Predicted Preferences card (decision C-08):** ML v1 predicts only `ROOM` and `FOOD` (meal plan, e.g. "Half Board"); it has no activity prediction. The card shows whatever `preferences[]` contains and must not pad missing types. In the demo, Rahul's Spa and Vegetarian appear in the stored **Preferences** card (`HISTORY`/`EXPLICIT`), not as ML predictions.
 
 ### 7.4 Cancellation Risk — `/operations/cancellations`
 
