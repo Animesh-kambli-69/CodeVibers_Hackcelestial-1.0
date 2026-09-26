@@ -1,0 +1,52 @@
+{
+  "model": "XGBRegressor",
+  "version": "1.0.0",
+  "features": [
+    "DayOfWeek",
+    "WeekNumber",
+    "Month",
+    "Year",
+    "IsWeekend",
+    "IsHoliday",
+    "Lag7_TotalBookings",
+    "Lag14_TotalBookings",
+    "Lag30_TotalBookings",
+    "Roll7_AvgADR",
+    "Roll7_AvgLeadTime"
+  ],
+  "targets": {
+    "primary": "ConfirmedBookings",
+    "secondary": "OccupancyRate"
+  },
+  "train_days": 610,
+  "test_days": 153,
+  "metrics": {
+    "confirmed_bookings": {
+      "MAE": 9.452,
+      "RMSE": 13.496,
+      "R2": -0.0971
+    },
+    "occupancy_rate": {
+      "MAE": 8.639,
+      "R2": -0.1108
+    }
+  },
+  "baseline": {
+    "Ridge MAE": 9.869,
+    "Ridge RMSE": 13.401
+  },
+  "feature_importances": {
+    "IsHoliday": 0.12399999797344208,
+    "Lag7_TotalBookings": 0.1234000027179718,
+    "Lag14_TotalBookings": 0.10409999638795853,
+    "Roll7_AvgADR": 0.09269999712705612,
+    "Month": 0.09049999713897705,
+    "Roll7_AvgLeadTime": 0.08789999783039093,
+    "DayOfWeek": 0.08630000054836273,
+    "WeekNumber": 0.08479999750852585,
+    "Lag30_TotalBookings": 0.07840000092983246,
+    "IsWeekend": 0.0649000033736229,
+    "Year": 0.06300000101327896
+  },
+  "data_source": "H1.csv (Resort Hotel) \u2014 Real data only"
+}

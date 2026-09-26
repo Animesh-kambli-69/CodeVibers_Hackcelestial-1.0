@@ -1,0 +1,30 @@
+{
+  "model": "MultiOutputClassifier(XGBClassifier)",
+  "version": "1.0.0",
+  "features": [
+    "Adults",
+    "Children",
+    "Babies",
+    "IsFamily",
+    "TotalStays",
+    "StaysInWeekendNights",
+    "StaysInWeekNights",
+    "ADR",
+    "TotalOfSpecialRequests",
+    "RequiredCarParkingSpaces",
+    "Country_enc",
+    "MarketSegment_enc",
+    "CustomerType_enc"
+  ],
+  "targets": [
+    "Meal_enc",
+    "ReservedRoomType_enc"
+  ],
+  "train_rows": 32036,
+  "test_rows": 8010,
+  "accuracy_per_target": {
+    "Meal_enc": 0.8422,
+    "ReservedRoomType_enc": 0.6476
+  },
+  "data_source": "H1.csv (Resort Hotel) \u2014 Real data only"
+}
