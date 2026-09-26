@@ -143,6 +143,7 @@ function createApp(injectedDeps = {}) {
     roomDemandService,
     recommendationService,
     insightService,
+    userRepository: userRepo,
   });
   const digitalTwinController = createDigitalTwinController(digitalTwinService);
   const operationsController = createOperationsController({

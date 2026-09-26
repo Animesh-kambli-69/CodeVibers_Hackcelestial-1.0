@@ -3,6 +3,7 @@
  */
 const asyncHandler = require('../utils/asyncHandler');
 const respond = require('../utils/respond');
+const { hashPassword } = require('../utils/password');
 
 function createManagerController({
   kpiService,
@@ -11,6 +12,7 @@ function createManagerController({
   roomDemandService,
   recommendationService,
   insightService,
+  userRepository,
 }) {
   const getDashboard = asyncHandler(async (req, res) => {
     const [kpis, recsRes] = await Promise.all([
@@ -77,6 +79,25 @@ function createManagerController({
     return respond.ok(res, updated);
   });
 
+  const getOperationsManagers = asyncHandler(async (req, res) => {
+    const managers = await userRepository.findByRole('OPERATIONS_MANAGER');
+    return respond.ok(res, { users: managers });
+  });
+
+  const resetUserPassword = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    const { newPassword } = req.body;
+    
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: { message: 'Password must be at least 6 characters' } });
+    }
+    
+    const newHash = await hashPassword(newPassword);
+    await userRepository.updatePassword(userId, newHash);
+    
+    return respond.ok(res, { message: 'Password updated successfully' });
+  });
+
   return {
     getDashboard,
     getBookingForecast,
@@ -85,6 +106,8 @@ function createManagerController({
     getRoomDemand,
     listRecommendations,
     patchRecommendation,
+    getOperationsManagers,
+    resetUserPassword,
   };
 }
 

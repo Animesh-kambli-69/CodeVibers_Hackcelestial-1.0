@@ -1,9 +1,69 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppShell from '../components/layout/AppShell';
-import { Users, Wrench, Plus } from 'lucide-react';
+import { Users, Wrench, Plus, X, Lock, CheckCircle2 } from 'lucide-react';
+import { apiRequest } from '../lib/api';
 
 export default function ManagerSettings() {
   const [activeTab, setActiveTab] = useState('users');
+  
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  
+  const [newPassword, setNewPassword] = useState('');
+  const [updating, setUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await apiRequest('/manager/users/operations');
+      setUsers(res.users || []);
+    } catch (err) {
+      console.error('Failed to fetch users', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditClick = (user) => {
+    setEditingUser(user);
+    setNewPassword('');
+    setUpdateError(null);
+    setUpdateSuccess(false);
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setUpdateError('Password must be at least 6 characters');
+      return;
+    }
+    
+    setUpdating(true);
+    setUpdateError(null);
+    try {
+      await apiRequest(`/manager/users/${editingUser.id}/password`, {
+        method: 'PUT',
+        body: JSON.stringify({ newPassword })
+      });
+      setUpdateSuccess(true);
+      setTimeout(() => {
+        setEditingUser(null);
+      }, 2000);
+    } catch (err) {
+      setUpdateError(err.message || 'Failed to update password');
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <AppShell role="RESORT_MANAGER" title="System Settings">
@@ -56,41 +116,48 @@ export default function ManagerSettings() {
                   <button style={{
                     display: 'flex', alignItems: 'center', gap: 8,
                     background: '#167A65', color: 'white', border: 'none',
-                    padding: '8px 16px', borderRadius: 8, fontWeight: 600, cursor: 'pointer'
-                  }}>
+                    padding: '8px 16px', borderRadius: 8, fontWeight: 600, cursor: 'pointer', opacity: 0.5
+                  }} disabled>
                     <Plus size={16} /> Add Manager
                   </button>
                 </div>
               </div>
               <div style={{ padding: 24 }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid #E5EAE7', textAlign: 'left', color: '#66716C' }}>
-                      <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Name</th>
-                      <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Email</th>
-                      <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Status</th>
-                      <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13, textAlign: 'right' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #F0F7F4' }}>
-                      <td style={{ padding: '16px 0', fontWeight: 500 }}>Sarah Jenkins</td>
-                      <td style={{ padding: '16px 0', color: '#66716C' }}>ops@smartresort360.com</td>
-                      <td style={{ padding: '16px 0' }}>
-                        <span style={{ background: '#DDEBE5', color: '#167A65', padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>Active</span>
-                      </td>
-                      <td style={{ padding: '16px 0', textAlign: 'right', color: '#167A65', cursor: 'pointer', fontWeight: 500 }}>Edit</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #F0F7F4' }}>
-                      <td style={{ padding: '16px 0', fontWeight: 500 }}>David Chen</td>
-                      <td style={{ padding: '16px 0', color: '#66716C' }}>d.chen@smartresort360.com</td>
-                      <td style={{ padding: '16px 0' }}>
-                        <span style={{ background: '#DDEBE5', color: '#167A65', padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>Active</span>
-                      </td>
-                      <td style={{ padding: '16px 0', textAlign: 'right', color: '#167A65', cursor: 'pointer', fontWeight: 500 }}>Edit</td>
-                    </tr>
-                  </tbody>
-                </table>
+                {loading ? (
+                  <p style={{ color: '#66716C' }}>Loading users...</p>
+                ) : users.length === 0 ? (
+                  <p style={{ color: '#66716C' }}>No operations managers found.</p>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid #E5EAE7', textAlign: 'left', color: '#66716C' }}>
+                        <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Name</th>
+                        <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Email</th>
+                        <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13 }}>Status</th>
+                        <th style={{ padding: '12px 0', fontWeight: 600, fontSize: 13, textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map(u => (
+                        <tr key={u.id} style={{ borderBottom: '1px solid #F0F7F4' }}>
+                          <td style={{ padding: '16px 0', fontWeight: 500, textTransform: 'capitalize' }}>{u.name}</td>
+                          <td style={{ padding: '16px 0', color: '#66716C' }}>{u.email}</td>
+                          <td style={{ padding: '16px 0' }}>
+                            <span style={{ background: '#DDEBE5', color: '#167A65', padding: '4px 8px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>Active</span>
+                          </td>
+                          <td style={{ padding: '16px 0', textAlign: 'right' }}>
+                            <button 
+                              onClick={() => handleEditClick(u)}
+                              style={{ background: 'none', border: 'none', color: '#167A65', cursor: 'pointer', fontWeight: 500 }}
+                            >
+                              Edit Password
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           )}
@@ -159,6 +226,60 @@ export default function ManagerSettings() {
           )}
         </div>
       </div>
+
+      {/* Edit Password Modal */}
+      {editingUser && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(23, 32, 28, 0.6)' }} onClick={() => setEditingUser(null)} />
+          <div style={{ position: 'relative', background: '#FFF', borderRadius: 12, padding: 32, width: '100%', maxWidth: 400 }}>
+            <button onClick={() => setEditingUser(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', cursor: 'pointer', color: '#66716C' }}>
+              <X size={20} />
+            </button>
+            <h2 style={{ margin: '0 0 8px', fontSize: 20, fontWeight: 700, color: '#17201C', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Lock size={20} color="#167A65" />
+              Reset User Password
+            </h2>
+            <p style={{ margin: '0 0 24px', fontSize: 14, color: '#66716C' }}>
+              Enter a new password for <strong style={{textTransform: 'capitalize'}}>{editingUser.name}</strong> ({editingUser.email}).
+            </p>
+
+            {updateSuccess ? (
+              <div style={{ padding: 16, backgroundColor: '#F0FDF4', border: '1px solid #DCFCE7', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+                <CheckCircle2 color="#16A34A" size={24} />
+                <div style={{ color: '#166534', fontSize: 14, fontWeight: 600 }}>Password updated successfully!</div>
+              </div>
+            ) : (
+              <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {updateError && (
+                  <div style={{ padding: 12, backgroundColor: '#FEF2F2', color: '#C95C5C', borderRadius: 8, fontSize: 13, fontWeight: 500 }}>
+                    {updateError}
+                  </div>
+                )}
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#66716C', marginBottom: 6 }}>New Password</label>
+                  <input 
+                    type="password" 
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    required
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #E5EAE7', fontSize: 14 }}
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  disabled={updating}
+                  style={{
+                    marginTop: 8, padding: '12px', background: '#167A65', color: '#FFF', border: 'none', borderRadius: 8,
+                    fontSize: 14, fontWeight: 600, cursor: updating ? 'not-allowed' : 'pointer', opacity: updating ? 0.7 : 1
+                  }}
+                >
+                  {updating ? 'Updating...' : 'Force Reset Password'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

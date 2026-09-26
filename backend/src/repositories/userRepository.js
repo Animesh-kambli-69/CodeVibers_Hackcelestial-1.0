@@ -46,6 +46,23 @@ class UserRepository {
     };
   }
 
+  async findByRole(role) {
+    const query = `
+      SELECT id, email, role, created_at
+      FROM users
+      WHERE role = $1
+      ORDER BY created_at DESC;
+    `;
+    const res = await this.pool.query(query, [role]);
+    return res.rows.map(row => ({
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      createdAt: row.created_at,
+      name: row.email.split('@')[0], // simple mock name based on email
+    }));
+  }
+
   async findPasswordHashById(id) {
     const query = `SELECT password_hash FROM users WHERE id = $1 LIMIT 1;`;
     const res = await this.pool.query(query, [id]);
