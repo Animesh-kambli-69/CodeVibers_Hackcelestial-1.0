@@ -22,6 +22,9 @@ const ResortInfoRepository = require('./repositories/resortInfoRepository');
 const RecommendationRepository = require('./repositories/recommendationRepository');
 const PredictionRepository = require('./repositories/predictionRepository');
 const ChatRepository = require('./repositories/chatRepository');
+const WeatherRepository = require('./repositories/weatherRepository');
+const SocialSignalRepository = require('./repositories/socialSignalRepository');
+const DigitalTwinRepository = require('./repositories/digitalTwinRepository');
 
 // Services
 const MlService = require('./services/mlService');
@@ -38,12 +41,16 @@ const GuestIntelligenceService = require('./services/guestIntelligenceService');
 const GuestSelfService = require('./services/guestSelfService');
 const ResortInfoService = require('./services/resortInfoService');
 const ConciergeService = require('./services/conciergeService');
+const WeatherService = require('./services/weatherService');
+const SocialSignalService = require('./services/socialSignalService');
+const DigitalTwinService = require('./services/digitalTwinService');
 
 // Controllers & Routes
 const createAuthController = require('./controllers/auth.controller');
 const createManagerController = require('./controllers/manager.controller');
 const createOperationsController = require('./controllers/operations.controller');
 const createGuestController = require('./controllers/guest.controller');
+const createDigitalTwinController = require('./controllers/digitalTwin.controller');
 
 const createAuthRoutes = require('./routes/auth.routes');
 const createManagerRoutes = require('./routes/manager.routes');
@@ -91,6 +98,9 @@ function createApp(injectedDeps = {}) {
   const recommendationRepo = injectedDeps.recommendationRepository || new RecommendationRepository(pool);
   const predictionRepo = injectedDeps.predictionRepository || new PredictionRepository(pool);
   const chatRepo = injectedDeps.chatRepository || new ChatRepository(pool);
+  const weatherRepo = injectedDeps.weatherRepository || new WeatherRepository(pool);
+  const socialSignalRepo = injectedDeps.socialSignalRepository || new SocialSignalRepository(pool);
+  const digitalTwinRepo = injectedDeps.digitalTwinRepository || new DigitalTwinRepository(pool);
 
   const mlService = injectedDeps.mlService || new MlService();
   const aiService = injectedDeps.aiService || new AiService();
@@ -107,6 +117,22 @@ function createApp(injectedDeps = {}) {
   const guestSelfService = injectedDeps.guestSelfService || new GuestSelfService(guestRepo, preferenceRepo, bookingRepo);
   const resortInfoService = injectedDeps.resortInfoService || new ResortInfoService(resortInfoRepo);
   const conciergeService = injectedDeps.conciergeService || new ConciergeService(chatRepo, resortInfoRepo, guestRepo, preferenceRepo, bookingRepo, aiService);
+  const weatherService = injectedDeps.weatherService || new WeatherService();
+  const socialSignalService = injectedDeps.socialSignalService || new SocialSignalService();
+  const digitalTwinService =
+    injectedDeps.digitalTwinService ||
+    new DigitalTwinService({
+      weatherService,
+      socialSignalService,
+      weatherRepository: weatherRepo,
+      socialSignalRepository: socialSignalRepo,
+      digitalTwinRepository: digitalTwinRepo,
+      forecastService,
+      cancellationService,
+      roomDemandService,
+      kpiService,
+      aiService,
+    });
 
   // Controllers
   const authController = createAuthController(authService);
@@ -118,6 +144,7 @@ function createApp(injectedDeps = {}) {
     recommendationService,
     insightService,
   });
+  const digitalTwinController = createDigitalTwinController(digitalTwinService);
   const operationsController = createOperationsController({
     kpiService,
     guestIntelligenceService,
@@ -131,7 +158,7 @@ function createApp(injectedDeps = {}) {
 
   // Wire Routers
   const authRouter = createAuthRoutes(authController);
-  const managerRouter = createManagerRoutes(managerController);
+  const managerRouter = createManagerRoutes(managerController, digitalTwinController);
   const operationsRouter = createOperationsRoutes(operationsController);
   const guestRouter = createGuestRoutes(guestController);
 
