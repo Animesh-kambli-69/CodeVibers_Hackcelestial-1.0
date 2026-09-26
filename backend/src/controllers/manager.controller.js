@@ -1,0 +1,91 @@
+/**
+ * Manager Controller.
+ */
+const asyncHandler = require('../utils/asyncHandler');
+const respond = require('../utils/respond');
+
+function createManagerController({
+  kpiService,
+  forecastService,
+  cancellationService,
+  roomDemandService,
+  recommendationService,
+  insightService,
+}) {
+  const getDashboard = asyncHandler(async (req, res) => {
+    const [kpis, recsRes] = await Promise.all([
+      kpiService.getManagerKpis(),
+      recommendationService.list({ limit: 5 }),
+    ]);
+
+    const insights = insightService.generateInsights({
+      kpis,
+      recommendations: recsRes.items,
+    });
+
+    return respond.ok(res, {
+      kpis,
+      insights,
+      topRecommendations: recsRes.items,
+    });
+  });
+
+  const getBookingForecast = asyncHandler(async (req, res) => {
+    const days = req.query.days || 7;
+    const result = await forecastService.getBookingForecast(days);
+    return respond.ok(res, result);
+  });
+
+  const getOccupancyForecast = asyncHandler(async (req, res) => {
+    const days = req.query.days || 7;
+    const result = await forecastService.getOccupancyForecast(days);
+    return respond.ok(res, result);
+  });
+
+  const getCancellationSummary = asyncHandler(async (req, res) => {
+    const windowDays = req.query.window || 30;
+    const result = await cancellationService.getManagerSummary(windowDays);
+    return respond.ok(res, result);
+  });
+
+  const getRoomDemand = asyncHandler(async (req, res) => {
+    const windowDays = req.query.window || 30;
+    const result = await roomDemandService.getRoomDemands(windowDays);
+    return respond.ok(res, { roomDemands: result });
+  });
+
+  const listRecommendations = asyncHandler(async (req, res) => {
+    const { page, limit, status, priority, category } = req.query;
+    const offset = (page - 1) * limit;
+
+    const { items, total } = await recommendationService.list({
+      status,
+      priority,
+      category,
+      limit,
+      offset,
+    });
+
+    return respond.paginated(res, items, { page, limit, total });
+  });
+
+  const patchRecommendation = asyncHandler(async (req, res) => {
+    const { recommendationId } = req.params;
+    const { status, note } = req.body;
+
+    const updated = await recommendationService.updateStatus(recommendationId, status, note);
+    return respond.ok(res, updated);
+  });
+
+  return {
+    getDashboard,
+    getBookingForecast,
+    getOccupancyForecast,
+    getCancellationSummary,
+    getRoomDemand,
+    listRecommendations,
+    patchRecommendation,
+  };
+}
+
+module.exports = createManagerController;
