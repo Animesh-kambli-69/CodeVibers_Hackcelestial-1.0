@@ -18,7 +18,7 @@ async function seed() {
     await pool.query(`
       TRUNCATE chat_messages, chat_conversations, predictions, recommendations,
                resort_information, guest_activities, guest_preferences, bookings,
-               rooms, guests, users CASCADE;
+               rooms, guests, users, staff_members CASCADE;
     `);
 
     // 2. Seed Users
@@ -170,6 +170,41 @@ async function seed() {
           ${isHighRisk ? 0 : 1}, ${isHighRisk ? 2 : 0}, ${isHighRisk ? 0 : 3}, '${roomType}', 'BB', 'IND'
         );
       `);
+    }
+
+    // Seed real staff roster (backend/docs/decision-engine.md §15 Staff Optimization Workflow).
+    // A few members per department are marked inactive (on leave) so the computed
+    // shortage/status in staffingService.js reflects genuine roster gaps, not a
+    // contrived number.
+    logger.info('Seeding staff roster...');
+    const roster = [];
+    const frontDeskNames = ['Aditi Rao', 'Karan Mehta', 'Sneha Joshi', 'Rohan Desai', 'Ishita Nair', 'Vikram Singh', 'Ananya Iyer', 'Farhan Sheikh'];
+    frontDeskNames.forEach((name, i) => roster.push({ name, department: 'FRONT_DESK', role: 'Front Desk Associate', isActive: i < 6 }));
+
+    const housekeepingNames = [
+      'Meena Kumari', 'Suresh Yadav', 'Lakshmi Nair', 'Ramesh Pillai', 'Geeta Devi', 'Anil Kumar',
+      'Kavita Sharma', 'Prakash Rao', 'Sunita Verma', 'Dinesh Patil', 'Rekha Bai', 'Manoj Tiwari',
+      'Shanti Devi', 'Vijay Gowda', 'Pooja Gaikwad', 'Ravi Shetty', 'Neelam Kaur', 'Arjun Nayak',
+      'Sarita Pawar', 'Mahesh Jadhav', 'Radha Krishnan',
+    ];
+    housekeepingNames.forEach((name, i) => roster.push({ name, department: 'HOUSEKEEPING', role: 'Housekeeping Staff', isActive: i < 18 }));
+
+    const fnbNames = [
+      'Chef Rajesh Kumar', 'Chef Priya Menon', 'Amit Choudhary', 'Sana Khan', 'Deepak Bhatt', 'Nisha Reddy',
+      'Manish Agarwal', 'Shweta Kapoor', 'Rahul Bose', 'Tanvi Shah', 'Gaurav Malhotra', 'Kritika Jain',
+      'Sameer Ansari', 'Divya Menon', 'Yash Trivedi', 'Alok Mishra', 'Preeti Saxena',
+    ];
+    fnbNames.forEach((name, i) => roster.push({ name, department: 'FOOD_BEVERAGE', role: 'Food & Beverage Staff', isActive: i < 15 }));
+
+    const spaNames = ['Anjali Kulkarni', 'Rohit Bhatia', 'Simran Chawla', 'Vivek Ramesh', 'Pallavi Sinha', 'Nikhil Bhandari', 'Ritu Dubey'];
+    spaNames.forEach((name, i) => roster.push({ name, department: 'SPA_WELLNESS', role: 'Spa & Wellness Therapist', isActive: i < 6 }));
+
+    for (const member of roster) {
+      await pool.query(
+        `INSERT INTO staff_members (name, department, role, shift, is_active, hired_at)
+         VALUES ($1, $2, $3, 'DAY', $4, $5);`,
+        [member.name, member.department, member.role, member.isActive, addDays(today, -Math.floor(Math.random() * 365))]
+      );
     }
 
     logger.info('Database seeding finished successfully.');

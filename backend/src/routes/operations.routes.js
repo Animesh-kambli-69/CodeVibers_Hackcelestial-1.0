@@ -4,6 +4,8 @@ const {
   listGuestsQuerySchema,
   guestIdParamSchema,
   cancellationRiskQuerySchema,
+  bookingIdParamSchema,
+  roomIdParamSchema,
 } = require('../validators/operations.validators');
 
 function createOperationsRoutes(operationsController) {
@@ -14,6 +16,13 @@ function createOperationsRoutes(operationsController) {
   router.get('/guests/:guestId', validate(guestIdParamSchema), operationsController.getGuestDetail);
   router.get('/guests/:guestId/predictions', validate(guestIdParamSchema), operationsController.getGuestPredictions);
   router.get('/cancellation-risk', validate(cancellationRiskQuerySchema), operationsController.getCancellationRisk);
+  router.get('/staffing', operationsController.getStaffing);
+
+  // Check-in / check-out lifecycle
+  router.patch('/bookings/:bookingId/check-in', validate(bookingIdParamSchema), operationsController.checkInBooking);
+  router.patch('/bookings/:bookingId/check-out', validate(bookingIdParamSchema), operationsController.checkOutBooking);
+  router.patch('/bookings/:bookingId/cancel', validate(bookingIdParamSchema), operationsController.cancelBooking);
+  router.patch('/rooms/:roomId/complete-maintenance', validate(roomIdParamSchema), operationsController.completeRoomMaintenance);
 
   return router;
 }

@@ -26,6 +26,10 @@ class AuthService {
       throw new UnauthorizedError('Invalid email or password', 'INVALID_CREDENTIALS');
     }
 
+    if (user.isActive === false) {
+      throw new UnauthorizedError('This account has been deactivated', 'ACCOUNT_INACTIVE');
+    }
+
     let guestId = null;
     if (user.role === 'GUEST') {
       const guest = await this.guestRepository.findByUserId(user.id);
@@ -71,7 +75,7 @@ class AuthService {
       email: user.email,
       role: user.role,
       guestId: auth.guestId || null,
-      name: guest ? guest.name : undefined,
+      name: guest ? guest.name : user.name,
     };
   }
 }

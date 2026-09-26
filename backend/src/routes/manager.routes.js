@@ -12,8 +12,13 @@ const {
   socialSignalsQuerySchema,
   simulateBodySchema,
 } = require('../validators/digitalTwin.validators');
+const {
+  listUsersQuerySchema,
+  createOperationsManagerSchema,
+  setActiveBodySchema,
+} = require('../validators/userManagement.validators');
 
-function createManagerRoutes(managerController, digitalTwinController) {
+function createManagerRoutes(managerController, digitalTwinController, userManagementController) {
   const router = express.Router();
 
   router.get('/dashboard', managerController.getDashboard);
@@ -30,6 +35,13 @@ function createManagerRoutes(managerController, digitalTwinController) {
     router.get('/digital-twin/social-signals', validate(socialSignalsQuerySchema), digitalTwinController.getSocialSignals);
     router.get('/digital-twin/state', digitalTwinController.getState);
     router.post('/digital-twin/simulate', validate(simulateBodySchema), digitalTwinController.simulate);
+  }
+
+  // User Management (Operations Manager accounts)
+  if (userManagementController) {
+    router.get('/users', validate(listUsersQuerySchema), userManagementController.listOperationsManagers);
+    router.post('/users', validate(createOperationsManagerSchema), userManagementController.createOperationsManager);
+    router.patch('/users/:userId/status', validate(setActiveBodySchema), userManagementController.setActive);
   }
 
   return router;

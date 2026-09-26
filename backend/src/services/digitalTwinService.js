@@ -24,6 +24,7 @@ class DigitalTwinService {
     cancellationService,
     roomDemandService,
     kpiService,
+    staffingService,
     aiService,
   }) {
     this.weatherService = weatherService;
@@ -35,6 +36,7 @@ class DigitalTwinService {
     this.cancellationService = cancellationService;
     this.roomDemandService = roomDemandService;
     this.kpiService = kpiService;
+    this.staffingService = staffingService;
     this.aiService = aiService;
   }
 
@@ -160,24 +162,28 @@ class DigitalTwinService {
    * (same shape recommendationService.js uses) — this is the twin's "ground truth".
    */
   async _buildBaselineState() {
-    const [occupancyForecastResult, cancellationSummary, roomDemands, kpis] = await Promise.all([
+    const [occupancyForecastResult, cancellationSummary, roomDemands, kpis, departmentStaffing] = await Promise.all([
       this.forecastService.getOccupancyForecast(7),
       this.cancellationService.getManagerSummary(30),
       this.roomDemandService.getRoomDemands(30),
       this.kpiService.getManagerKpis(),
+      this.staffingService ? this.staffingService.getDepartmentStaffing() : Promise.resolve([]),
     ]);
+
+    const housekeeping = departmentStaffing.find((d) => d.department === 'Housekeeping');
 
     return {
       occupancyForecast: { predictions: occupancyForecastResult.forecast },
       cancellationSummary,
       roomDemands,
       kpis,
+      departmentStaffing,
       staff: {
-        // No staffing module exists yet (decision-engine.md §15 marks it out of MVP scope);
-        // derive a simple required-vs-available baseline from occupancy so the weather
-        // twin can still demonstrate the staffing cascade end-to-end.
-        housekeepingRequired: Math.ceil(((kpis.currentOccupancy || 0) / 100) * (kpis.totalRooms || 0) * 0.08),
-        housekeepingAvailable: Math.ceil((kpis.totalRooms || 0) * 0.06),
+        // Weather cascades operational load onto Housekeeping specifically
+        // (see weatherImpactRule.js housekeepingLoadDeltaStaffHours) — sourced
+        // from the real staff_members roster via staffingService, not mocked.
+        housekeepingRequired: housekeeping ? housekeeping.required : 0,
+        housekeepingAvailable: housekeeping ? housekeeping.available : 0,
       },
     };
   }

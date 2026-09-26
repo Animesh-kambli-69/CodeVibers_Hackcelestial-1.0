@@ -25,6 +25,7 @@ const ChatRepository = require('./repositories/chatRepository');
 const WeatherRepository = require('./repositories/weatherRepository');
 const SocialSignalRepository = require('./repositories/socialSignalRepository');
 const DigitalTwinRepository = require('./repositories/digitalTwinRepository');
+const StaffRepository = require('./repositories/staffRepository');
 
 // Services
 const MlService = require('./services/mlService');
@@ -44,6 +45,9 @@ const ConciergeService = require('./services/conciergeService');
 const WeatherService = require('./services/weatherService');
 const SocialSignalService = require('./services/socialSignalService');
 const DigitalTwinService = require('./services/digitalTwinService');
+const StaffingService = require('./services/staffingService');
+const BookingLifecycleService = require('./services/bookingLifecycleService');
+const UserManagementService = require('./services/userManagementService');
 
 // Controllers & Routes
 const createAuthController = require('./controllers/auth.controller');
@@ -51,6 +55,7 @@ const createManagerController = require('./controllers/manager.controller');
 const createOperationsController = require('./controllers/operations.controller');
 const createGuestController = require('./controllers/guest.controller');
 const createDigitalTwinController = require('./controllers/digitalTwin.controller');
+const createUserManagementController = require('./controllers/userManagement.controller');
 
 const createAuthRoutes = require('./routes/auth.routes');
 const createManagerRoutes = require('./routes/manager.routes');
@@ -101,6 +106,7 @@ function createApp(injectedDeps = {}) {
   const weatherRepo = injectedDeps.weatherRepository || new WeatherRepository(pool);
   const socialSignalRepo = injectedDeps.socialSignalRepository || new SocialSignalRepository(pool);
   const digitalTwinRepo = injectedDeps.digitalTwinRepository || new DigitalTwinRepository(pool);
+  const staffRepo = injectedDeps.staffRepository || new StaffRepository(pool);
 
   const mlService = injectedDeps.mlService || new MlService();
   const aiService = injectedDeps.aiService || new AiService();
@@ -119,6 +125,9 @@ function createApp(injectedDeps = {}) {
   const conciergeService = injectedDeps.conciergeService || new ConciergeService(chatRepo, resortInfoRepo, guestRepo, preferenceRepo, bookingRepo, aiService);
   const weatherService = injectedDeps.weatherService || new WeatherService();
   const socialSignalService = injectedDeps.socialSignalService || new SocialSignalService();
+  const staffingService = injectedDeps.staffingService || new StaffingService(staffRepo, bookingRepo);
+  const bookingLifecycleService =
+    injectedDeps.bookingLifecycleService || new BookingLifecycleService(bookingRepo, roomRepo);
   const digitalTwinService =
     injectedDeps.digitalTwinService ||
     new DigitalTwinService({
@@ -131,6 +140,7 @@ function createApp(injectedDeps = {}) {
       cancellationService,
       roomDemandService,
       kpiService,
+      staffingService,
       aiService,
     });
 
@@ -149,6 +159,8 @@ function createApp(injectedDeps = {}) {
     kpiService,
     guestIntelligenceService,
     cancellationService,
+    staffingService,
+    bookingLifecycleService,
   });
   const guestController = createGuestController({
     guestSelfService,

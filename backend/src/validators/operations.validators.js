@@ -20,8 +20,22 @@ const cancellationRiskQuerySchema = {
   }),
 };
 
+const bookingIdParamSchema = {
+  params: z.object({
+    bookingId: uuidSchema,
+  }),
+};
+
+const roomIdParamSchema = {
+  params: z.object({
+    roomId: uuidSchema,
+  }),
+};
+
 module.exports = {
   listGuestsQuerySchema,
   guestIdParamSchema,
   cancellationRiskQuerySchema,
+  bookingIdParamSchema,
+  roomIdParamSchema,
 };

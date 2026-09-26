@@ -1,6 +1,11 @@
 /**
  * Booking Repository for Manager Analytics, Forecasts, and Guest Stay History.
- * Read-only in Phase 0 (No booking write operations per Principle P8).
+ * Mostly read-only per Principle P8 — checkIn/checkOut/cancel below are the
+ * deliberate, narrowly-scoped exception (status + timestamps only, never
+ * dates/room/price), added for the check-in/check-out lifecycle. Each write
+ * method includes its expected current status in the WHERE clause so an
+ * invalid transition affects zero rows instead of silently overwriting state;
+ * bookingLifecycleService.js interprets a zero-row result as a conflict.
  */
 
 class BookingRepository {
@@ -152,6 +157,50 @@ class BookingRepository {
     return counts;
   }
 
+  /**
+   * CONFIRMED -> CHECKED_IN. Returns null (not throws) if the booking wasn't
+   * found or wasn't CONFIRMED, so the caller can distinguish "not found" from
+   * "invalid transition" by re-reading the row.
+   */
+  async checkIn(bookingId, { earlyCheckin = false } = {}) {
+    const query = `
+      UPDATE bookings
+      SET status = 'CHECKED_IN', checked_in_at = NOW(), early_checkin = $2
+      WHERE id = $1 AND status = 'CONFIRMED'
+      RETURNING *;
+    `;
+    const res = await this.pool.query(query, [bookingId, earlyCheckin]);
+    if (res.rows.length === 0) return null;
+    return this._mapRow(res.rows[0]);
+  }
+
+  /** CHECKED_IN -> CHECKED_OUT. */
+  async checkOut(bookingId, { lateCheckout = false } = {}) {
+    const query = `
+      UPDATE bookings
+      SET status = 'CHECKED_OUT', checked_out_at = NOW(), late_checkout = $2
+      WHERE id = $1 AND status = 'CHECKED_IN'
+      RETURNING *;
+    `;
+    const res = await this.pool.query(query, [bookingId, lateCheckout]);
+    if (res.rows.length === 0) return null;
+    return this._mapRow(res.rows[0]);
+  }
+
+  /** CONFIRMED -> CANCELLED. Deliberately excludes CHECKED_IN — cancelling after
+   * check-in is blocked by this WHERE clause, not just by the service layer. */
+  async cancel(bookingId) {
+    const query = `
+      UPDATE bookings
+      SET status = 'CANCELLED'
+      WHERE id = $1 AND status = 'CONFIRMED'
+      RETURNING *;
+    `;
+    const res = await this.pool.query(query, [bookingId]);
+    if (res.rows.length === 0) return null;
+    return this._mapRow(res.rows[0]);
+  }
+
   _mapRow(row) {
     return {
       id: row.id,
@@ -181,6 +230,10 @@ class BookingRepository {
       reservedRoomTypeCode: row.reserved_room_type_code,
       guestName: row.guest_name,
       guestEmail: row.guest_email,
+      checkedInAt: row.checked_in_at,
+      checkedOutAt: row.checked_out_at,
+      earlyCheckin: row.early_checkin,
+      lateCheckout: row.late_checkout,
       createdAt: row.created_at,
     };
   }
