@@ -173,10 +173,26 @@ function createApp(injectedDeps = {}) {
     guestRouter,
   };
 
-  // 6. Mount main API router under /api
+  // 6. Root endpoint & Health alias (prevents 404 on Render root probes or direct URL visits)
+  app.get('/', (req, res) => {
+    res.json({
+      status: 'ok',
+      service: 'Smart Resort 360 Backend API',
+      version: '1.0.0',
+      apiBase: '/api',
+      health: '/api/health',
+      docs: 'https://github.com/Animesh-kambli-69/CodeVibers_Hackcelestial-1.0',
+    });
+  });
+
+  app.get('/health', (req, res) => {
+    res.redirect('/api/health');
+  });
+
+  // 7. Mount main API router under /api
   app.use('/api', createApiRouter(deps));
 
-  // 7. Unmatched route -> 404
+  // 8. Unmatched route -> 404
   app.use(notFound);
 
   // 8. Global centralized error handler

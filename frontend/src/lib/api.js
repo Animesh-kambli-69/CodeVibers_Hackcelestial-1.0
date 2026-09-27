@@ -26,7 +26,8 @@ import {
   chatMockResponses
 } from '../mocks/guest.js';
 
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+const RAW_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const BASE = RAW_BASE.replace(/\/$/, '').replace(/\/api$/, '');
 
 async function resolveMock(path, init = {}) {
   // Simulate network latency (80ms)
