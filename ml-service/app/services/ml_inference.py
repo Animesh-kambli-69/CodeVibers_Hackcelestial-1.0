@@ -176,21 +176,22 @@ class MLModelService:
         if self._daily_df is None:
             raise RuntimeError("Daily data not loaded.")
 
-        # Use last known historical stats for lag initialization
-        last_row = self._daily_df.iloc[-1]
-        last_date = pd.Timestamp(last_row["ArrivalDate"])
+        # Use historical stats for lag/rolling feature initialization (seasonal patterns)
         avg_bookings = self._daily_df["ConfirmedBookings"].tail(30).mean()
         avg_adr = self._daily_df["AvgADR"].tail(30).mean()
         avg_lead_time = self._daily_df["AvgLeadTime"].tail(30).mean()
 
-        # Lag buffers from real historical tail
+        # Lag buffers from real historical tail (feature engineering, not for dates)
         lag_buffer = list(self._daily_df["TotalBookings"].tail(30).values)
+
+        # Anchor forecast to TODAY's actual date so dates match real calendar
+        today = pd.Timestamp.now().normalize()
 
         predictions = []
         day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
         for i in range(1, days + 1):
-            target_date = last_date + pd.Timedelta(days=i)
+            target_date = today + pd.Timedelta(days=i)
             dow = target_date.dayofweek
             week_num = target_date.isocalendar()[1]
             month = target_date.month
