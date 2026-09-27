@@ -18,35 +18,35 @@
     "primary": "ConfirmedBookings",
     "secondary": "OccupancyRate"
   },
-  "train_days": 610,
-  "test_days": 153,
+  "train_days": 205,
+  "test_days": 52,
   "metrics": {
     "confirmed_bookings": {
-      "MAE": 9.452,
-      "RMSE": 13.496,
-      "R2": -0.0971
+      "MAE": 13.599,
+      "RMSE": 23.983,
+      "R2": 0.0359
     },
     "occupancy_rate": {
-      "MAE": 8.639,
-      "R2": -0.1108
+      "MAE": 6.183,
+      "R2": 0.0379
     }
   },
   "baseline": {
-    "Ridge MAE": 9.869,
-    "Ridge RMSE": 13.401
+    "Ridge MAE": 13.9,
+    "Ridge RMSE": 24.895
   },
   "feature_importances": {
-    "IsHoliday": 0.12399999797344208,
-    "Lag7_TotalBookings": 0.1234000027179718,
-    "Lag14_TotalBookings": 0.10409999638795853,
-    "Roll7_AvgADR": 0.09269999712705612,
-    "Month": 0.09049999713897705,
-    "Roll7_AvgLeadTime": 0.08789999783039093,
-    "DayOfWeek": 0.08630000054836273,
-    "WeekNumber": 0.08479999750852585,
-    "Lag30_TotalBookings": 0.07840000092983246,
-    "IsWeekend": 0.0649000033736229,
-    "Year": 0.06300000101327896
+    "Year": 0.33880001306533813,
+    "Month": 0.14820000529289246,
+    "Roll7_AvgADR": 0.08609999716281891,
+    "IsWeekend": 0.08299999684095383,
+    "IsHoliday": 0.059300001710653305,
+    "Lag7_TotalBookings": 0.05130000039935112,
+    "WeekNumber": 0.050700001418590546,
+    "DayOfWeek": 0.050700001418590546,
+    "Lag14_TotalBookings": 0.04919999837875366,
+    "Lag30_TotalBookings": 0.04490000009536743,
+    "Roll7_AvgLeadTime": 0.03779999911785126
   },
-  "data_source": "H1.csv (Resort Hotel) \u2014 Real data only"
+  "data_source": "Real historical bookings from Postgres (2015-06-30 to 2016-04-11, originally H1.csv Resort Hotel data), aggregated to daily granularity via backend/db/scripts/export-occupancy-dataset.js"
 }

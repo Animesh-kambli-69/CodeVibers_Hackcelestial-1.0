@@ -8,6 +8,7 @@ function createGuestController({
   guestSelfService,
   resortInfoService,
   conciergeService,
+  feedbackService,
 }) {
   const getProfile = asyncHandler(async (req, res) => {
     const result = await guestSelfService.getProfile(req.auth.guestId);
@@ -48,12 +49,26 @@ function createGuestController({
     return respond.ok(res, result);
   });
 
+  const getPendingFeedback = asyncHandler(async (req, res) => {
+    const result = await feedbackService.listPendingForGuest(req.auth.guestId);
+    return respond.ok(res, result);
+  });
+
+  const submitFeedback = asyncHandler(async (req, res) => {
+    const { bookingId } = req.params;
+    const { rating, comment } = req.body;
+    const result = await feedbackService.submitAsGuest(bookingId, req.auth.guestId, { rating, comment });
+    return respond.ok(res, result);
+  });
+
   return {
     getProfile,
     getPreferences,
     getBookings,
     listResortInfo,
     postChat,
+    getPendingFeedback,
+    submitFeedback,
   };
 }
 

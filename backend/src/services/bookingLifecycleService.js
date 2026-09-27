@@ -19,9 +19,11 @@ const { ConflictError, NotFoundError } = require('../utils/errors');
 const { getTodayString } = require('../utils/dates');
 
 class BookingLifecycleService {
-  constructor(bookingRepository, roomRepository) {
+  constructor(bookingRepository, roomRepository, guestAccountService = null, feedbackService = null) {
     this.bookingRepository = bookingRepository;
     this.roomRepository = roomRepository;
+    this.guestAccountService = guestAccountService;
+    this.feedbackService = feedbackService;
   }
 
   async checkIn(bookingId, actorUserId = null) {
@@ -49,7 +51,16 @@ class BookingLifecycleService {
       changedBy: actorUserId,
     });
 
-    return updated;
+    // Auto-provision a guest self-service login if this guest doesn't have
+    // one yet (e.g. booked via the public walk-in flow). Returns credentials
+    // exactly once — ops must hand them to the guest now; they're never
+    // recoverable after this response (only the bcrypt hash is stored).
+    let generatedCredentials = null;
+    if (this.guestAccountService) {
+      generatedCredentials = await this.guestAccountService.provisionIfMissing(booking.guestId);
+    }
+
+    return { ...updated, generatedCredentials };
   }
 
   async checkOut(bookingId, actorUserId = null) {
@@ -78,6 +89,13 @@ class BookingLifecycleService {
       bookingId,
       changedBy: actorUserId,
     });
+
+    // Start the "feedback first, then destroy" clock (feedbackService.js /
+    // guestAccountService.js) — the guest's login stays alive until they
+    // submit feedback or the grace window lapses, whichever comes first.
+    if (this.feedbackService) {
+      await this.feedbackService.createPendingForBooking(bookingId, booking.guestId);
+    }
 
     return updated;
   }

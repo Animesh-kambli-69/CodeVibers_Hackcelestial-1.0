@@ -103,6 +103,16 @@ class GuestRepository {
 
     return { items, total };
   }
+
+  /** Links a guest profile to a (newly created or existing) login account. */
+  async linkUser(guestId, userId) {
+    await this.pool.query('UPDATE guests SET user_id = $2 WHERE id = $1;', [guestId, userId]);
+  }
+
+  /** Detaches the guest's login account without touching the guest profile itself. */
+  async unlinkUser(guestId) {
+    await this.pool.query('UPDATE guests SET user_id = NULL WHERE id = $1;', [guestId]);
+  }
 }
 
 module.exports = GuestRepository;

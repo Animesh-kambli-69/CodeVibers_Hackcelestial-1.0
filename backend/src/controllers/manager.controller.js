@@ -11,6 +11,7 @@ function createManagerController({
   roomDemandService,
   recommendationService,
   insightService,
+  feedbackService,
 }) {
   const getDashboard = asyncHandler(async (req, res) => {
     const [kpis, recsRes] = await Promise.all([
@@ -77,6 +78,12 @@ function createManagerController({
     return respond.ok(res, updated);
   });
 
+  const getSentiment = asyncHandler(async (req, res) => {
+    const days = req.query.days || 30;
+    const result = await feedbackService.getManagerSentimentSummary(days);
+    return respond.ok(res, result);
+  });
+
   return {
     getDashboard,
     getBookingForecast,
@@ -85,6 +92,7 @@ function createManagerController({
     getRoomDemand,
     listRecommendations,
     patchRecommendation,
+    getSentiment,
   };
 }
 

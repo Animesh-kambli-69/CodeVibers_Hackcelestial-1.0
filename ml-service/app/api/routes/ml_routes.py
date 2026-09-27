@@ -39,7 +39,10 @@ def predict_cancellation(req: CancellationRequest):
 # ─── Model 1: Occupancy Forecast ──────────────────────────────────────────────
 
 @router.get("/predict/occupancy", response_model=OccupancyForecastResponse, tags=["Occupancy"])
-def predict_occupancy(days: int = Query(default=30, ge=1, le=90, description="Forecast horizon (1-90 days)")):
+def predict_occupancy(
+    days: int = Query(default=30, ge=1, le=90, description="Forecast horizon (1-90 days)"),
+    start_date: str = Query(default=None, description="YYYY-MM-DD; forecast starts the day AFTER this date. Defaults to the day after the training data ends."),
+):
     """
     Forecast daily occupancy rate and confirmed bookings for the next N days.
     Based on real historical H1 Resort Hotel data — no synthetic data.
@@ -47,7 +50,7 @@ def predict_occupancy(days: int = Query(default=30, ge=1, le=90, description="Fo
     if not ml_service._loaded:
         raise HTTPException(status_code=503, detail="Models not loaded yet. Run train_all_models.py first.")
     try:
-        result = ml_service.predict_occupancy_forecast(days=days)
+        result = ml_service.predict_occupancy_forecast(days=days, start_date=start_date)
         predictions = [OccupancyDayPrediction(**p) for p in result["predictions"]]
         return OccupancyForecastResponse(
             forecast_days=result["forecast_days"],

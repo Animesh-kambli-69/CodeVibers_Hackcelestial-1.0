@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Menu, Activity, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, Activity, Bell, LogOut } from 'lucide-react';
 import { useAuth } from '../../AuthContext';
 import { Tooltip } from '../ui/Tooltip';
 
 export function TopBar({ onMobileMenuOpen, title }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [mlStatus, setMlStatus] = useState('ok'); // 'ok' | 'down'
 
   useEffect(() => {
@@ -12,13 +14,18 @@ export function TopBar({ onMobileMenuOpen, title }) {
     setMlStatus('ok');
   }, []);
 
-  const roleLabel = user?.role === 'manager'
+  const roleLabel = user?.role === 'RESORT_MANAGER'
     ? 'Resort Manager'
-    : user?.role === 'data_entry'
+    : user?.role === 'OPERATIONS_MANAGER'
     ? 'Operations Staff'
-    : user?.role === 'guest'
+    : user?.role === 'GUEST'
     ? 'Guest'
     : 'User';
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <header style={{
@@ -123,6 +130,31 @@ export function TopBar({ onMobileMenuOpen, title }) {
             </div>
           </div>
         </div>
+
+        {/* Sign out — Manager/Ops already have this in their sidebar (Sidebar.jsx);
+            the Guest layout has no sidebar, so it lives here instead. */}
+        {user?.role === 'GUEST' && (
+          <button
+            onClick={handleSignOut}
+            aria-label="Sign out"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '7px 12px',
+              borderRadius: 8,
+              border: '1px solid #E5EAE7',
+              backgroundColor: '#FFFFFF',
+              color: '#66716C',
+              fontSize: 12.5,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            <LogOut size={14} />
+            <span className="hidden sm:inline">Sign out</span>
+          </button>
+        )}
       </div>
     </header>
   );

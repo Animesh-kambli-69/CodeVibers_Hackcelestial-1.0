@@ -10,7 +10,7 @@ function createApiRouter(deps = {}) {
 
   // Public / Health probe
   router.use('/health', createHealthRouter(deps));
-  router.use('/public', createPublicRoutes());
+  router.use('/public', createPublicRoutes(deps));
 
   // Auth Routes (Public + Authenticated)
   if (deps.authRouter) {

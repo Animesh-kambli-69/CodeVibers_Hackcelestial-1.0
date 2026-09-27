@@ -167,13 +167,28 @@ class MLModelService:
 
     # ─── Occupancy Forecast ───────────────────────────────────────────────────
 
-    def predict_occupancy_forecast(self, days: int = 30) -> dict:
+    def predict_occupancy_forecast(self, days: int = 30, start_date: str = None) -> dict:
         if self._daily_df is None:
             raise RuntimeError("Daily data not loaded.")
 
-        # Use last known historical stats for lag initialization
+        # CR-04 (docs/ml-contracts.md): without start_date, forecasts anchor to
+        # the day after the training data ends (2016-04-12 for this dataset),
+        # which is useless to a caller wanting "starting tomorrow" in the real
+        # present. When start_date is given, calendar features (day-of-week,
+        # month, holiday flag, etc.) are computed against the REAL requested
+        # dates, while the lag/rolling booking-volume features still seed from
+        # the historical tail below — the daily aggregate table only has
+        # continuous history through 2016, so "typical recent booking pattern"
+        # is approximated from that history rather than fabricated.
         last_row = self._daily_df.iloc[-1]
-        last_date = pd.Timestamp(last_row["ArrivalDate"])
+        if start_date:
+            # The loop below always predicts starting at last_date + 1 day, so
+            # base_date = start_date itself (not start_date - 1) — matching the
+            # route's documented "forecast starts the day AFTER this date".
+            base_date = pd.Timestamp(start_date)
+        else:
+            base_date = pd.Timestamp(last_row["ArrivalDate"])
+        last_date = base_date
         avg_bookings = self._daily_df["ConfirmedBookings"].tail(30).mean()
         avg_adr = self._daily_df["AvgADR"].tail(30).mean()
         avg_lead_time = self._daily_df["AvgLeadTime"].tail(30).mean()

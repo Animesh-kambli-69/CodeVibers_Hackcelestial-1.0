@@ -8,8 +8,6 @@ import { ROLE_HOME } from './lib/constants';
 import LoginPage from './pages/LoginPage';
 import ForbiddenPage from './pages/ForbiddenPage';
 import ManagerSettings from './pages/ManagerSettings';
-import { DataEntryDashboard, GuestDashboard } from './pages/Dashboards';
-import ManagerDashboard from './pages/ManagerDashboard';
 
 import ManagerRoutes from './routes/ManagerRoutes';
 import OperationsRoutes from './routes/OperationsRoutes';
@@ -51,28 +49,10 @@ export default function App() {
             </ProtectedRoute>
           } />
 
-          {/* ── Top-Level / Legacy Routes ── */}
+          {/* ── Top-Level Routes ── */}
           <Route path="/settings" element={
             <ProtectedRoute allowedRole="RESORT_MANAGER">
               <ManagerSettings />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/dashboard/manager" element={
-            <ProtectedRoute allowedRole="RESORT_MANAGER">
-              <ManagerDashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/dashboard/data-entry" element={
-            <ProtectedRoute allowedRole="OPERATIONS_MANAGER">
-              <DataEntryDashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/dashboard/guest" element={
-            <ProtectedRoute allowedRole="GUEST">
-              <GuestDashboard />
             </ProtectedRoute>
           } />
 

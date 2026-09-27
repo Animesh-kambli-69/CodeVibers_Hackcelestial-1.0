@@ -26,6 +26,7 @@ const WeatherRepository = require('./repositories/weatherRepository');
 const SocialSignalRepository = require('./repositories/socialSignalRepository');
 const DigitalTwinRepository = require('./repositories/digitalTwinRepository');
 const StaffRepository = require('./repositories/staffRepository');
+const FeedbackRepository = require('./repositories/feedbackRepository');
 
 // Services
 const MlService = require('./services/mlService');
@@ -48,6 +49,8 @@ const DigitalTwinService = require('./services/digitalTwinService');
 const StaffingService = require('./services/staffingService');
 const BookingLifecycleService = require('./services/bookingLifecycleService');
 const UserManagementService = require('./services/userManagementService');
+const GuestAccountService = require('./services/guestAccountService');
+const FeedbackService = require('./services/feedbackService');
 
 // Controllers & Routes
 const createAuthController = require('./controllers/auth.controller');
@@ -107,11 +110,15 @@ function createApp(injectedDeps = {}) {
   const socialSignalRepo = injectedDeps.socialSignalRepository || new SocialSignalRepository(pool);
   const digitalTwinRepo = injectedDeps.digitalTwinRepository || new DigitalTwinRepository(pool);
   const staffRepo = injectedDeps.staffRepository || new StaffRepository(pool);
+  const feedbackRepo = injectedDeps.feedbackRepository || new FeedbackRepository(pool);
 
   const mlService = injectedDeps.mlService || new MlService();
   const aiService = injectedDeps.aiService || new AiService();
 
-  const authService = injectedDeps.authService || new AuthService(userRepo, guestRepo);
+  const guestAccountService = injectedDeps.guestAccountService || new GuestAccountService(userRepo, guestRepo);
+  const feedbackService = injectedDeps.feedbackService || new FeedbackService(feedbackRepo, guestAccountService);
+  const authService =
+    injectedDeps.authService || new AuthService(userRepo, guestRepo, feedbackRepo, guestAccountService);
   const predictionService = injectedDeps.predictionService || new PredictionService(mlService, predictionRepo);
   const forecastService = injectedDeps.forecastService || new ForecastService(predictionService, bookingRepo, roomRepo);
   const cancellationService = injectedDeps.cancellationService || new CancellationService(predictionService, bookingRepo);
@@ -127,7 +134,9 @@ function createApp(injectedDeps = {}) {
   const socialSignalService = injectedDeps.socialSignalService || new SocialSignalService();
   const staffingService = injectedDeps.staffingService || new StaffingService(staffRepo, bookingRepo);
   const bookingLifecycleService =
-    injectedDeps.bookingLifecycleService || new BookingLifecycleService(bookingRepo, roomRepo);
+    injectedDeps.bookingLifecycleService ||
+    new BookingLifecycleService(bookingRepo, roomRepo, guestAccountService, feedbackService);
+  const userManagementService = injectedDeps.userManagementService || new UserManagementService(userRepo);
   const digitalTwinService =
     injectedDeps.digitalTwinService ||
     new DigitalTwinService({
@@ -153,8 +162,10 @@ function createApp(injectedDeps = {}) {
     roomDemandService,
     recommendationService,
     insightService,
+    feedbackService,
   });
   const digitalTwinController = createDigitalTwinController(digitalTwinService);
+  const userManagementController = createUserManagementController(userManagementService);
   const operationsController = createOperationsController({
     kpiService,
     guestIntelligenceService,
@@ -166,11 +177,12 @@ function createApp(injectedDeps = {}) {
     guestSelfService,
     resortInfoService,
     conciergeService,
+    feedbackService,
   });
 
   // Wire Routers
   const authRouter = createAuthRoutes(authController);
-  const managerRouter = createManagerRoutes(managerController, digitalTwinController);
+  const managerRouter = createManagerRoutes(managerController, digitalTwinController, userManagementController);
   const operationsRouter = createOperationsRoutes(operationsController);
   const guestRouter = createGuestRoutes(guestController);
 
@@ -178,6 +190,7 @@ function createApp(injectedDeps = {}) {
     pool,
     mlService,
     aiService,
+    feedbackService,
     authRouter,
     managerRouter,
     operationsRouter,

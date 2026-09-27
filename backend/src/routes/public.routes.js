@@ -2,8 +2,27 @@ const express = require('express');
 const { getTodayString, addDays } = require('../utils/dates');
 const { getPool } = require('../config/database');
 
-function createPublicRoutes() {
+function createPublicRoutes(deps = {}) {
   const router = express.Router();
+  const { feedbackService } = deps;
+
+  // Unauthenticated feedback submission — the QR/link path for a guest whose
+  // account may already be destroyed (see feedbackService.js) by the time
+  // they scan a printed QR code. Guarded by a random, unguessable token
+  // (feedback_token) rather than a login, and the token is single-use.
+  if (feedbackService) {
+    router.post('/feedback/:token', async (req, res, next) => {
+      try {
+        const { token } = req.params;
+        const rating = parseInt(req.body.rating, 10);
+        const { comment } = req.body;
+        const result = await feedbackService.submitByToken(token, { rating, comment });
+        res.json({ data: result });
+      } catch (err) {
+        next(err);
+      }
+    });
+  }
 
   router.post('/bookings', async (req, res) => {
     try {

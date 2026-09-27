@@ -184,25 +184,36 @@ export default function LoginPage() {
     }
   };
 
+  // Demo buttons sign in with the real, seeded backend accounts (see
+  // README.md's credentials table) via the actual /auth/login endpoint —
+  // not fabricated user objects. This keeps them honest: if the backend or
+  // seed data is down, the demo buttons fail the same way real login would.
+  const DEMO_CREDENTIALS = {
+    manager: { email: 'manager@smartresort360.com', password: 'Manager@123', home: '/manager/dashboard' },
+    'data-entry': { email: 'ops@smartresort360.com', password: 'Ops@123', home: '/operations/dashboard' },
+    guest: { email: 'rahul.sharma@example.com', password: 'Guest@123', home: '/guest/home' },
+  };
+
   const handleDemo = async (role) => {
-    if (role === 'manager') {
-      login({
-        user: { role: 'manager', name: 'Resort Manager', email: 'manager@smartresort360.ai' },
-        token: 'demo-manager-token'
+    const creds = DEMO_CREDENTIALS[role];
+    if (!creds) return;
+    setError('');
+    setLoading(true);
+    try {
+      const res = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email: creds.email, password: creds.password }),
       });
-      navigate('/manager/dashboard');
-    } else if (role === 'data-entry') {
-      login({
-        user: { role: 'data_entry', name: 'Operations Staff', email: 'ops@smartresort360.ai' },
-        token: 'demo-ops-token'
-      });
-      navigate('/operations/dashboard');
-    } else if (role === 'guest') {
-      login({
-        user: { role: 'guest', name: 'Rahul Sharma', email: 'rahul.sharma@example.com' },
-        token: 'demo-guest-token'
-      });
-      navigate('/guest/home');
+      if (res.data && res.data.token) {
+        login(res.data);
+        navigate(creds.home);
+      } else {
+        setError('Demo login failed — is the backend running and seeded?');
+      }
+    } catch (err) {
+      setError(err.message || 'Demo login failed — is the backend running and seeded?');
+    } finally {
+      setLoading(false);
     }
   };
 

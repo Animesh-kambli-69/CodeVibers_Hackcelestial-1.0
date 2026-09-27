@@ -28,6 +28,7 @@ function createManagerRoutes(managerController, digitalTwinController, userManag
   router.get('/room-demand', validate(roomDemandQuerySchema), managerController.getRoomDemand);
   router.get('/recommendations', validate(listRecommendationsQuerySchema), managerController.listRecommendations);
   router.patch('/recommendations/:recommendationId', validate(patchRecommendationSchema), managerController.patchRecommendation);
+  router.get('/sentiment', managerController.getSentiment);
 
   // Weather-Driven Digital Twin
   if (digitalTwinController) {

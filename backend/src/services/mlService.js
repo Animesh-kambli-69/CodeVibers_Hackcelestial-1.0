@@ -8,6 +8,7 @@ const appConfig = require('../config/app');
 const ML_MAPPING = require('../config/mlMapping');
 const { request } = require('../utils/http');
 const { MlUnavailableError } = require('../utils/errors');
+const { getTodayString } = require('../utils/dates');
 const logger = require('../utils/logger');
 
 class MlService {
@@ -52,11 +53,14 @@ class MlService {
         return { cancellation: null, occupancy: null, preferences: null };
       }
 
+      // GET /data/summary nests each model's metadata under `models.<name>`
+      // (see ml-service/app/api/routes/ml_routes.py get_data_summary), not flat.
       const data = await res.json();
+      const models = data.models || {};
       this.cachedVersions = {
-        cancellation: data.cancellation ? `cancellation@${data.cancellation.version || '1.0.0'}` : null,
-        occupancy: data.occupancy ? `occupancy@${data.occupancy.version || '1.0.0'}` : null,
-        preferences: data.guest_preferences ? `guest_preferences@${data.guest_preferences.version || '1.0.0'}` : null,
+        cancellation: models.cancellation ? `cancellation@${models.cancellation.version || '1.0.0'}` : null,
+        occupancy: models.occupancy ? `occupancy@${models.occupancy.version || '1.0.0'}` : null,
+        preferences: models.guest_preferences ? `guest_preferences@${models.guest_preferences.version || '1.0.0'}` : null,
       };
       return this.cachedVersions;
     } catch (err) {
@@ -67,7 +71,13 @@ class MlService {
 
   async forecastOccupancy(days = 7) {
     try {
-      const res = await request(`${this.baseUrl}/predict/occupancy?days=${days}`, {
+      // start_date=today -> ML service forecasts from "tomorrow" (see CR-04,
+      // docs/ml-contracts.md), matching predictionService.js's freshness check
+      // (expectedFirstDate = addDays(today, 1)). Without this, the ML service
+      // anchors to the day after its training data ends instead of the real
+      // present, and every forecast gets rejected as stale.
+      const startDate = getTodayString();
+      const res = await request(`${this.baseUrl}/predict/occupancy?days=${days}&start_date=${startDate}`, {
         method: 'GET',
         timeout: appConfig.ML.TIMEOUT_MS,
       });

@@ -6,9 +6,11 @@ const { signToken } = require('../utils/jwt');
 const { UnauthorizedError, InternalError } = require('../utils/errors');
 
 class AuthService {
-  constructor(userRepository, guestRepository) {
+  constructor(userRepository, guestRepository, feedbackRepository = null, guestAccountService = null) {
     this.userRepository = userRepository;
     this.guestRepository = guestRepository;
+    this.feedbackRepository = feedbackRepository;
+    this.guestAccountService = guestAccountService;
   }
 
   async login(email, password) {
@@ -38,6 +40,19 @@ class AuthService {
         throw new InternalError('Guest profile data is missing for this account');
       }
       guestId = guest.id;
+
+      // Lazy destruction: a guest's auto-provisioned account is only meant to
+      // live through its feedback grace window (see bookingLifecycleService,
+      // guestAccountService). If that window lapsed without a login attempt
+      // in between, destroy it now and refuse the login rather than letting
+      // an expired account keep working indefinitely.
+      if (this.feedbackRepository && this.guestAccountService) {
+        const expired = await this.feedbackRepository.hasExpiredPending(guestId);
+        if (expired) {
+          await this.guestAccountService.destroy(guestId);
+          throw new UnauthorizedError('This account has expired', 'ACCOUNT_EXPIRED');
+        }
+      }
     }
 
     const tokenPayload = {

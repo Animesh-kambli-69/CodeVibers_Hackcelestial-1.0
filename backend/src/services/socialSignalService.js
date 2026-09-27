@@ -14,19 +14,14 @@
  */
 const env = require('../config/env');
 const { request } = require('../utils/http');
+const { scoreSentiment } = require('../utils/sentiment');
 const logger = require('../utils/logger');
 
 const POSITIVE_WORDS = ['great', 'love', 'amazing', 'beautiful', 'perfect', 'enjoy', 'relax', 'sunny', 'clear', 'best'];
 const NEGATIVE_WORDS = ['storm', 'flood', 'cancel', 'delay', 'stuck', 'ruined', 'warning', 'evacuate', 'damage', 'worst', 'closed', 'danger'];
 
 function heuristicSentiment(text) {
-  const lower = (text || '').toLowerCase();
-  let score = 0;
-  for (const w of POSITIVE_WORDS) if (lower.includes(w)) score += 1;
-  for (const w of NEGATIVE_WORDS) if (lower.includes(w)) score -= 1;
-  if (score > 0) return 'POSITIVE';
-  if (score < 0) return 'NEGATIVE';
-  return 'NEUTRAL';
+  return scoreSentiment(text, { positiveWords: POSITIVE_WORDS, negativeWords: NEGATIVE_WORDS });
 }
 
 class SocialSignalService {

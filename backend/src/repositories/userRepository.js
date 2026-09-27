@@ -70,6 +70,15 @@ class UserRepository {
     return { items: res.rows.map((row) => this._mapRow(row)), total };
   }
 
+  /**
+   * Hard-deletes a login account (used to genuinely destroy an auto-provisioned
+   * guest account, not just deactivate it — see guestAccountService.js).
+   * Caller is responsible for unlinking any guests.user_id reference first.
+   */
+  async delete(id) {
+    await this.pool.query('DELETE FROM users WHERE id = $1;', [id]);
+  }
+
   async setActive(id, isActive) {
     const query = `
       UPDATE users

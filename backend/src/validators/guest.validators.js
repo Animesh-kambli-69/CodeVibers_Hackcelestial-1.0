@@ -15,7 +15,18 @@ const resortInfoQuerySchema = {
   }),
 };
 
+const submitFeedbackSchema = {
+  params: z.object({
+    bookingId: uuidSchema,
+  }),
+  body: z.object({
+    rating: z.coerce.number().int().min(1).max(5),
+    comment: z.string().max(1000).optional().nullable(),
+  }),
+};
+
 module.exports = {
   chatBodySchema,
   resortInfoQuerySchema,
+  submitFeedbackSchema,
 };

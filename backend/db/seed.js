@@ -27,12 +27,12 @@ async function seed() {
     const guestPassword = await hashPassword('Guest@123');
 
     const managerRes = await pool.query(
-      `INSERT INTO users (email, password_hash, role) VALUES ($1, $2, 'RESORT_MANAGER') RETURNING id;`,
-      ['manager@smartresort360.com', managerPassword]
+      `INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, 'RESORT_MANAGER') RETURNING id;`,
+      ['Resort Manager', 'manager@smartresort360.com', managerPassword]
     );
     const opsRes = await pool.query(
-      `INSERT INTO users (email, password_hash, role) VALUES ($1, $2, 'OPERATIONS_MANAGER') RETURNING id;`,
-      ['ops@smartresort360.com', opsPassword]
+      `INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, 'OPERATIONS_MANAGER') RETURNING id;`,
+      ['Operations Manager', 'ops@smartresort360.com', opsPassword]
     );
     const rahulUserRes = await pool.query(
       `INSERT INTO users (email, password_hash, role) VALUES ($1, $2, 'GUEST') RETURNING id;`,

@@ -24,6 +24,13 @@ const appConfig = Object.freeze({
     MAX_NOTE_LENGTH: 500,
     FALLBACK_MESSAGE: "I apologize, but I don't have enough verified information to answer that question accurately. Please contact the front desk for immediate assistance.",
   },
+  FEEDBACK: {
+    // "Feedback first, then destroy" — the guest's auto-provisioned login
+    // stays alive for this long after checkout so they can submit feedback;
+    // past this, the account is destroyed regardless (next login attempt or
+    // db/scripts/cleanup-expired-guest-accounts.js).
+    GRACE_WINDOW_HOURS: 48,
+  },
   RATE_LIMITS: {
     LOGIN: {
       WINDOW_MS: 15 * 60 * 1000, // 15 minutes
