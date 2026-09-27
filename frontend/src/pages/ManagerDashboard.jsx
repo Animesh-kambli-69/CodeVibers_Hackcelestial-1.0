@@ -856,10 +856,10 @@ export default function ManagerDashboard() {
   // Build derived display values from live data
   const liveKpiData = {
     occupancy: { value: kpis?.currentOccupancy ?? '--', change: '', changeLabel: 'current' },
-    predictedOccupancy: { value: kpis?.predictedOccupancy ?? '--', label: 'Next 7 days', badge: 'FORECAST' },
-    upcomingBookings: { value: kpis?.upcomingArrivals ?? '--', change: `${kpis?.totalRooms ?? '--'} total rooms` },
-    bookingDemand: { value: kpis?.demandLevel ?? 'NORMAL', change: '' },
-    highCancellationRisk: { value: kpis?.highRiskCount ?? '--', label: 'Require attention' },
+    predictedOccupancy: { value: kpis?.avgPredictedOccupancy ?? '--', label: 'Next 7 days', badge: 'FORECAST' },
+    upcomingBookings: { value: kpis?.upcomingBookings ?? '--', change: `${kpis?.totalRooms ?? '--'} total rooms` },
+    bookingDemand: { value: kpis?.bookingDemand ?? 'NORMAL', change: '' },
+    highCancellationRisk: { value: kpis?.highRiskCancellationCount ?? '--', label: 'Require attention' },
     aiRecommendations: { value: topRecs?.length ?? 0, label: `${topRecs?.filter(r=>r.priority==='HIGH'||r.priority==='CRITICAL').length ?? 0} high priority` },
   };
 
