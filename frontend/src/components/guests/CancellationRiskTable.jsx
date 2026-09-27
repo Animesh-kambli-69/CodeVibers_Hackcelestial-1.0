@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
 import { formatProbability, formatDate } from '../../lib/utils';
@@ -43,7 +43,7 @@ export function CancellationRiskTable({ cohort = [] }) {
             {list.map((item) => {
               const isExpanded = expandedId === item.id;
               return (
-                <g key={item.id}>
+                <Fragment key={item.id}>
                   <tr
                     onClick={() => navigate(`/operations/guests/${item.guestId}`)}
                     style={{ borderBottom: isExpanded ? 'none' : '1px solid #F0F2F1', cursor: 'pointer' }}
@@ -75,14 +75,16 @@ export function CancellationRiskTable({ cohort = [] }) {
                         style={{
                           background: 'none',
                           border: 'none',
-                          padding: 0,
+                          padding: '4px 8px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 4,
                           fontSize: 12.5,
                           fontWeight: 600,
                           color: '#5B63C7',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
+                          borderRadius: 6,
+                          backgroundColor: isExpanded ? '#EEF0FB' : 'transparent'
                         }}
                       >
                         {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -105,7 +107,7 @@ export function CancellationRiskTable({ cohort = [] }) {
                       </td>
                     </tr>
                   )}
-                </g>
+                </Fragment>
               );
             })}
           </tbody>

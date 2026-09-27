@@ -10,7 +10,12 @@ const logger = require('../utils/logger');
 class AiService {
   constructor(apiKey = env.LLM_API_KEY, model = env.LLM_MODEL) {
     this.apiKey = apiKey;
-    this.model = model;
+    // Map legacy or deprecated model identifiers to currently active Gemini models
+    let resolvedModel = model || 'gemini-3.5-flash-lite';
+    if (resolvedModel.includes('1.5') || resolvedModel.includes('2.0') || resolvedModel.includes('2.5')) {
+      resolvedModel = 'gemini-3.5-flash-lite';
+    }
+    this.model = resolvedModel;
   }
 
   isConfigured() {
@@ -19,12 +24,10 @@ class AiService {
 
   async generateGroundedReply({ message, guestContext, sources = [] }) {
     if (!this.isConfigured()) {
-      // In dev or unconfigured mode, return verified grounded template
       return this._generateTemplateReply(message, sources, guestContext);
     }
 
     try {
-      // System instructions and grounding constraints
       const systemPrompt = `
 You are the Smart Resort 360 AI Concierge.
 Your purpose is to provide warm, personalized, accurate assistance to resort guests.
@@ -45,44 +48,45 @@ Preferences: ${(guestContext.preferences || []).map((p) => `${p.preferenceType}:
 
       const prompt = `${systemPrompt}\n\nGUEST CONTEXT:\n${guestDetails}\n\nVERIFIED SOURCES:\n${sourceContext}\n\nGUEST QUESTION:\n${message}\n\nRESPONSE:`;
 
-      // Call Google Gemini API (or OpenAI compatible)
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 500,
-          },
-        }),
-        signal: AbortSignal.timeout(appConfig.LLM.TIMEOUT_MS),
-      });
+      // Try primary model (gemini-3.5-flash-lite) then fallback to gemini-3.5-flash
+      const candidateModels = [this.model, 'gemini-3.5-flash-lite', 'gemini-3.5-flash'];
+      let lastErr = null;
 
-      if (!res.ok) {
-        throw new AiUnavailableError(`LLM API returned status ${res.status}`);
+      for (const m of candidateModels) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${this.apiKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: 500,
+              },
+            }),
+            signal: AbortSignal.timeout(appConfig.LLM.TIMEOUT_MS),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const generatedText =
+              data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+            if (generatedText) {
+              return generatedText;
+            }
+          }
+        } catch (err) {
+          lastErr = err;
+        }
       }
 
-      const data = await res.json();
-      const generatedText =
-        data.candidates &&
-        data.candidates[0] &&
-        data.candidates[0].content &&
-        data.candidates[0].content.parts &&
-        data.candidates[0].content.parts[0]
-          ? data.candidates[0].content.parts[0].text.trim()
-          : null;
-
-      if (!generatedText) {
-        throw new AiUnavailableError('Empty response from LLM');
-      }
-
-      return generatedText;
+      // If all external LLM calls fail, return verified grounded template
+      return this._generateTemplateReply(message, sources, guestContext);
     } catch (err) {
-      logger.error({ error: err.message }, 'Failed to generate LLM grounded reply');
-      if (err instanceof AiUnavailableError) throw err;
-      throw new AiUnavailableError(`AI Concierge unavailable: ${err.message}`);
+      logger.warn({ error: err.message }, 'Failed to generate LLM grounded reply, using verified template');
+      return this._generateTemplateReply(message, sources, guestContext);
     }
   }
 

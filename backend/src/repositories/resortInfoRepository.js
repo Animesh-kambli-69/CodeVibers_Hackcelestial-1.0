@@ -54,23 +54,86 @@ class ResortInfoRepository {
 
   async searchGroundedSources(queryText, limit = 5) {
     if (!queryText || queryText.trim() === '') {
-      return [];
+      const fallback = await this.pool.query('SELECT id, category, title, content, updated_at FROM resort_information ORDER BY category ASC LIMIT $1', [limit]);
+      return fallback.rows.map(r => ({ id: r.id, category: r.category, title: r.title, content: r.content, updatedAt: r.updated_at }));
     }
 
-    // Full-Text Search with ILIKE fallback ranking
-    const query = `
-      SELECT id, category, title, content, updated_at,
-             ts_rank(to_tsvector('english', title || ' ' || content), plainto_tsquery('english', $1)) as rank
-      FROM resort_information
-      WHERE to_tsvector('english', title || ' ' || content) @@ plainto_tsquery('english', $1)
-         OR title ILIKE '%' || $1 || '%'
-         OR content ILIKE '%' || $1 || '%'
-      ORDER BY rank DESC, title ASC
-      LIMIT $2;
-    `;
+    const stopWords = new Set([
+      'what', 'are', 'is', 'the', 'a', 'an', 'and', 'or', 'to', 'for', 'in', 'on', 'at',
+      'can', 'i', 'you', 'me', 'my', 'we', 'our', 'do', 'have', 'there', 'any', 'tell',
+      'about', 'options', 'option', 'places', 'place', 'info', 'information', 'how', 'show'
+    ]);
+
+    const tokens = queryText
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !stopWords.has(w));
+
+    const categoryMap = {
+      DINING: ['dining', 'restaurant', 'food', 'breakfast', 'lunch', 'dinner', 'tapas', 'bistro', 'cafe', 'eat', 'meal', 'drinks', 'bar', 'michelin', 'tuna'],
+      SPA: ['spa', 'massage', 'wellness', 'ayurvedic', 'hydrotherapy', 'steam', 'facial', 'relax', 'plunge', 'treatment'],
+      ACTIVITIES: ['activities', 'activity', 'snorkel', 'snorkeling', 'cruise', 'sailing', 'catamaran', 'dolphin', 'excursion', 'boat', 'marine', 'yoga'],
+      FACILITIES: ['pool', 'infinity', 'gym', 'fitness', 'workout', 'technogym', 'deck', 'beach', 'swimming'],
+      POLICIES: ['checkin', 'checkout', 'policy', 'policies', 'rules', 'arrival', 'departure', 'early', 'late', 'hours', 'time'],
+      TRANSPORTATION: ['airport', 'transfer', 'limousine', 'taxi', 'helipad', 'car', 'pickup', 'drop', 'flight']
+    };
+
+    const matchedCategories = [];
+    for (const [cat, words] of Object.entries(categoryMap)) {
+      if (tokens.some((t) => words.some((w) => w.includes(t) || t.includes(w)))) {
+        matchedCategories.push(cat);
+      }
+    }
+
+    const conditions = [];
+    const params = [];
+
+    for (const t of tokens) {
+      params.push(`%${t}%`);
+      conditions.push(`(title ILIKE $${params.length} OR content ILIKE $${params.length} OR category ILIKE $${params.length})`);
+    }
+
+    if (matchedCategories.length > 0) {
+      params.push(matchedCategories);
+      conditions.push(`category = ANY($${params.length})`);
+    }
 
     try {
-      const res = await this.pool.query(query, [queryText, limit]);
+      let res;
+      if (conditions.length > 0) {
+        params.push(limit);
+        const sql = `
+          SELECT id, category, title, content, updated_at
+          FROM resort_information
+          WHERE ${conditions.join(' OR ')}
+          ORDER BY (
+            CASE 
+              WHEN title ILIKE '%' || $1 || '%' THEN 1
+              WHEN category = ANY($${matchedCategories.length > 0 ? params.length - 1 : 1}) THEN 2
+              ELSE 3
+            END
+          ) ASC, title ASC
+          LIMIT $${params.length};
+        `;
+        res = await this.pool.query(sql, params);
+      }
+
+      if (!res || res.rows.length === 0) {
+        // Fallback to top resort articles so LLM is always grounded
+        const fallbackRes = await this.pool.query(
+          'SELECT id, category, title, content, updated_at FROM resort_information ORDER BY category ASC LIMIT $1',
+          [limit]
+        );
+        return fallbackRes.rows.map((r) => ({
+          id: r.id,
+          category: r.category,
+          title: r.title,
+          content: r.content,
+          updatedAt: r.updated_at,
+        }));
+      }
+
       return res.rows.map((row) => ({
         id: row.id,
         category: row.category,
@@ -79,20 +142,16 @@ class ResortInfoRepository {
         updatedAt: row.updated_at,
       }));
     } catch (err) {
-      // Fallback to simple ILIKE search if plainto_tsquery fails on special syntax
-      const fallbackQuery = `
-        SELECT id, category, title, content, updated_at
-        FROM resort_information
-        WHERE title ILIKE '%' || $1 || '%' OR content ILIKE '%' || $1 || '%'
-        LIMIT $2;
-      `;
-      const res = await this.pool.query(fallbackQuery, [queryText, limit]);
-      return res.rows.map((row) => ({
-        id: row.id,
-        category: row.category,
-        title: row.title,
-        content: row.content,
-        updatedAt: row.updated_at,
+      const fallbackRes = await this.pool.query(
+        'SELECT id, category, title, content, updated_at FROM resort_information ORDER BY category ASC LIMIT $1',
+        [limit]
+      );
+      return fallbackRes.rows.map((r) => ({
+        id: r.id,
+        category: r.category,
+        title: r.title,
+        content: r.content,
+        updatedAt: r.updated_at,
       }));
     }
   }

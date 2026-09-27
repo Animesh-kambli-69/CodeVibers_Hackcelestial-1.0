@@ -51,22 +51,24 @@ export function ChatInput({ onSend, disabled }) {
       <button
         onClick={handleSubmit}
         disabled={!text.trim() || disabled}
+        title="Send message to AI Concierge"
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
+          width: 38,
+          height: 38,
+          borderRadius: 19,
           border: 'none',
-          backgroundColor: text.trim() && !disabled ? '#167A65' : '#E5EAE7',
-          color: '#FFFFFF',
+          backgroundColor: text.trim() && !disabled ? '#167A65' : '#E6F4F1',
+          color: text.trim() && !disabled ? '#FFFFFF' : '#167A65',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          cursor: text.trim() && !disabled ? 'pointer' : 'not-allowed',
-          transition: 'background-color 0.15s ease',
-          flexShrink: 0
+          cursor: text.trim() && !disabled ? 'pointer' : 'default',
+          transition: 'all 0.2s ease',
+          flexShrink: 0,
+          boxShadow: text.trim() && !disabled ? '0 2px 8px rgba(22,122,101,0.25)' : 'none'
         }}
       >
-        <Send size={16} />
+        <Send size={17} color={text.trim() && !disabled ? '#FFFFFF' : '#167A65'} />
       </button>
     </div>
   );
