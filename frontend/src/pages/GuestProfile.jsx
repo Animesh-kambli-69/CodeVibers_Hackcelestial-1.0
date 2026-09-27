@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Sparkles, ArrowLeft, RefreshCw } from 'lucide-react';
+import { ArrowLeft, LogIn, LogOut, Copy, Check } from 'lucide-react';
 
 import AppShell from '../components/layout/AppShell';
 import GuestHeader from '../components/guests/GuestHeader';
@@ -12,6 +12,113 @@ import BookingHistoryTable from '../components/guests/BookingHistoryTable';
 import Skeleton from '../components/ui/Skeleton';
 import ErrorState from '../components/ui/ErrorState';
 import { apiRequest } from '../lib/api';
+import { formatDate, formatCurrency } from '../lib/utils';
+
+/* Generated guest login credentials are returned exactly once by check-in —
+ * this modal is the only place an ops manager can see/copy them. */
+function CredentialsModal({ credentials, onClose }) {
+  const [copied, setCopied] = useState(false);
+
+  if (!credentials) return null;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(`Username: ${credentials.username}\nPassword: ${credentials.password}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error('Clipboard copy failed:', err);
+    }
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 100,
+      backgroundColor: 'rgba(23,32,28,0.5)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20
+    }}>
+      <div style={{ width: '100%', maxWidth: 420, backgroundColor: '#FFFFFF', borderRadius: 16, padding: 24, boxShadow: '0 10px 30px rgba(0,0,0,0.15)' }}>
+        <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 18, fontWeight: 700, color: '#17201C', margin: '0 0 6px' }}>
+          Guest Checked In
+        </h3>
+        <p style={{ fontSize: 13, color: '#66716C', margin: '0 0 16px' }}>
+          Share these login details with the guest — this is the only time they will be shown.
+        </p>
+
+        <div style={{ backgroundColor: '#F7F8F6', border: '1px solid #E5EAE7', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 11.5, color: '#66716C', marginBottom: 2 }}>Username</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#17201C', fontFamily: 'monospace' }}>{credentials.username}</div>
+          </div>
+          <div>
+            <div style={{ fontSize: 11.5, color: '#66716C', marginBottom: 2 }}>Password</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#17201C', fontFamily: 'monospace' }}>{credentials.password}</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+          <button
+            onClick={handleCopy}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 16px', borderRadius: 8, border: '1px solid #E5EAE7',
+              backgroundColor: '#FFFFFF', color: '#17201C', fontWeight: 600, cursor: 'pointer'
+            }}
+          >
+            {copied ? <Check size={15} /> : <Copy size={15} />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+          <button
+            onClick={onClose}
+            style={{ padding: '8px 18px', borderRadius: 8, border: 'none', backgroundColor: '#167A65', color: '#FFFFFF', fontWeight: 600, cursor: 'pointer' }}
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BookingActions({ booking, onCheckIn, onCheckOut, actionLoading }) {
+  if (!booking) return null;
+
+  if (booking.status === 'CONFIRMED') {
+    return (
+      <button
+        onClick={onCheckIn}
+        disabled={actionLoading}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px', borderRadius: 8, border: 'none',
+          backgroundColor: '#167A65', color: '#FFFFFF', fontWeight: 600, fontSize: 13,
+          cursor: actionLoading ? 'not-allowed' : 'pointer', opacity: actionLoading ? 0.6 : 1
+        }}
+      >
+        <LogIn size={15} /> Check In Guest
+      </button>
+    );
+  }
+
+  if (booking.status === 'CHECKED_IN') {
+    return (
+      <button
+        onClick={onCheckOut}
+        disabled={actionLoading}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px', borderRadius: 8, border: '1px solid #E5EAE7',
+          backgroundColor: '#FFFFFF', color: '#17201C', fontWeight: 600, fontSize: 13,
+          cursor: actionLoading ? 'not-allowed' : 'pointer', opacity: actionLoading ? 0.6 : 1
+        }}
+      >
+        <LogOut size={15} /> Check Out Guest
+      </button>
+    );
+  }
+
+  return null;
+}
 
 export default function GuestProfile() {
   const { guestId } = useParams();
@@ -20,13 +127,21 @@ export default function GuestProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [guestData, setGuestData] = useState(null);
+  const [predictions, setPredictions] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState(null);
+  const [credentials, setCredentials] = useState(null);
 
   const fetchProfileData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiRequest(`/operations/guests/${guestId || 'g-101'}`);
-      setGuestData(res.data);
+      const [detailRes, predRes] = await Promise.all([
+        apiRequest(`/operations/guests/${guestId}`),
+        apiRequest(`/operations/guests/${guestId}/predictions`),
+      ]);
+      setGuestData(detailRes.data);
+      setPredictions(predRes.data);
     } catch (err) {
       console.error('Failed to load guest profile:', err);
       setError('Guest profile not found or unavailable.');
@@ -38,6 +153,39 @@ export default function GuestProfile() {
   useEffect(() => {
     fetchProfileData();
   }, [guestId]);
+
+  const handleCheckIn = async () => {
+    if (!guestData?.currentStay) return;
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      const res = await apiRequest(`/operations/bookings/${guestData.currentStay.id}/check-in`, { method: 'PATCH' });
+      if (res.data?.generatedCredentials) {
+        setCredentials(res.data.generatedCredentials);
+      }
+      await fetchProfileData();
+    } catch (err) {
+      console.error('Check-in failed:', err);
+      setActionError('Check-in failed. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCheckOut = async () => {
+    if (!guestData?.currentStay) return;
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await apiRequest(`/operations/bookings/${guestData.currentStay.id}/check-out`, { method: 'PATCH' });
+      await fetchProfileData();
+    } catch (err) {
+      console.error('Check-out failed:', err);
+      setActionError('Check-out failed. Please try again.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (error) {
     return (
@@ -79,51 +227,83 @@ export default function GuestProfile() {
     );
   }
 
-  const { profile, currentBooking, storedPreferences, predictions, bookingsHistory } = guestData || {};
+  const { profile, currentStay, preferences, bookingHistory } = guestData || {};
+
+  // Normalize field names: backend returns arrivalDate/departureDate/bookingChannel/adr/status,
+  // CurrentBookingCard expects checkIn/checkOut/channel/adrINR/specialRequest.
+  const bookingView = currentStay ? {
+    ...currentStay,
+    checkIn: currentStay.arrivalDate,
+    checkOut: currentStay.departureDate,
+    channel: currentStay.bookingChannel,
+    adrINR: currentStay.adr,
+    specialRequest: currentStay.specialRequests > 0 ? profile?.specialRequirements : null,
+  } : null;
+
+  const cancellationView = predictions?.cancellationRisk ? {
+    riskLevel: predictions.cancellationRisk.riskLevel,
+    probability: predictions.cancellationRisk.cancellationProbability,
+    factors: predictions.cancellationRisk.factors || [],
+  } : null;
+
+  const storedPreferencesView = (preferences || []).map(p => ({
+    type: p.preferenceType,
+    value: p.preferenceValue,
+    source: p.source,
+  }));
+
+  const predictedPreferencesView = (predictions?.predictedPreferences || []).map(p => ({
+    type: p.preferenceType,
+    value: p.preferenceValue,
+    probability: p.confidence,
+  }));
+
+  const historyView = (bookingHistory || []).map(b => ({
+    bookingId: b.id,
+    dates: `${formatDate(b.arrivalDate)} - ${formatDate(b.departureDate)}`,
+    room: `${b.roomType}${b.roomNumber ? ` (${b.roomNumber})` : ''}`,
+    status: b.status,
+    amount: formatCurrency(b.adr),
+  }));
 
   return (
-    <AppShell role="data_entry" title={`Guest Intelligence: ${profile?.name || 'Rahul Sharma'}`}>
-      {/* Header Info Banner */}
+    <AppShell role="data_entry" title={`Guest Intelligence: ${profile?.name || ''}`}>
       <GuestHeader
         profile={profile}
-        cancellationRisk={predictions?.cancellation}
+        cancellationRisk={cancellationView}
       />
 
-      {/* Grid Row 1: Current Booking vs Cancellation Risk */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
-        <CurrentBookingCard booking={currentBooking} />
-        <CancellationRiskCard cancellation={predictions?.cancellation} />
-      </div>
-
-      {/* Grid Row 2: Stored Preferences vs Predicted Preferences */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
-        <PreferenceList preferences={storedPreferences} />
-        <PredictedPreferences
-          predictions={predictions?.preferences}
-          status={predictions?.predictionStatus}
-        />
-      </div>
-
-      {/* AI Intelligence Summary Banner */}
-      {predictions?.aiSummary && (
+      {currentStay && (
         <div style={{
-          backgroundColor: '#EEF0FB',
-          border: '1px solid rgba(91,99,199,0.3)',
-          borderRadius: 12,
-          padding: 20,
-          marginBottom: 20
+          backgroundColor: '#FFFFFF', borderRadius: 12, border: '1px solid #E5EAE7',
+          padding: 16, marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#5B63C7', fontWeight: 700, fontSize: 13.5, marginBottom: 6 }}>
-            <Sparkles size={16} />
-            <span>AI Guest Intelligence Summary</span>
+          <div style={{ fontSize: 13, color: '#66716C' }}>
+            Booking status: <strong style={{ color: '#17201C' }}>{currentStay.status}</strong>
+            {actionError && <span style={{ color: '#C95C5C', marginLeft: 12 }}>{actionError}</span>}
           </div>
-          <p style={{ margin: 0, fontSize: 13.5, color: '#17201C', lineHeight: 1.6 }}>
-            {predictions.aiSummary}
-          </p>
+          <BookingActions
+            booking={currentStay}
+            onCheckIn={handleCheckIn}
+            onCheckOut={handleCheckOut}
+            actionLoading={actionLoading}
+          />
         </div>
       )}
 
-      {/* Guest Loyalty & Visit Statistics Bar */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
+        <CurrentBookingCard booking={bookingView} />
+        <CancellationRiskCard cancellation={cancellationView} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
+        <PreferenceList preferences={storedPreferencesView} />
+        <PredictedPreferences
+          predictions={predictedPreferencesView}
+          status={predictedPreferencesView.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE'}
+        />
+      </div>
+
       <div style={{
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
@@ -137,15 +317,16 @@ export default function GuestProfile() {
         flexWrap: 'wrap',
         gap: 12
       }}>
-        <div>Total Visits: <strong style={{ color: '#167A65' }}>{profile?.totalVisits || 1} stays</strong></div>
+        <div>Previous Visits: <strong style={{ color: '#167A65' }}>{profile?.previousVisits ?? 0} stays</strong></div>
         <div style={{ color: '#E5EAE7' }}>|</div>
-        <div>Avg Stay Length: <strong style={{ color: '#17201C' }}>{profile?.avgStayNights || 3} nights</strong></div>
+        <div>Avg Stay Length: <strong style={{ color: '#17201C' }}>{profile?.averageStayNights ?? '—'} nights</strong></div>
         <div style={{ color: '#E5EAE7' }}>|</div>
-        <div>Avg Historical Spend: <strong style={{ color: '#167A65' }}>₹{(profile?.avgSpendINR || 12500).toLocaleString('en-IN')}</strong></div>
+        <div>Total Stays: <strong style={{ color: '#167A65' }}>{profile?.totalStays ?? 0}</strong></div>
       </div>
 
-      {/* Stay History Table */}
-      <BookingHistoryTable history={bookingsHistory} />
+      <BookingHistoryTable history={historyView} />
+
+      <CredentialsModal credentials={credentials} onClose={() => setCredentials(null)} />
     </AppShell>
   );
 }

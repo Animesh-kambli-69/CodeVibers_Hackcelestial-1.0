@@ -69,7 +69,7 @@ class BookingRepository {
       FROM bookings b
       LEFT JOIN rooms r ON b.room_id = r.id
       WHERE b.guest_id = $1 AND b.status = 'CHECKED_IN'
-      ORDER BY b.checked_in_at DESC
+      ORDER BY b.checked_in_at DESC NULLS LAST
       LIMIT 1;
     `;
     const res = await this.pool.query(query, [guestId]);

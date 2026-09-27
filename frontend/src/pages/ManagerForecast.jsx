@@ -60,8 +60,13 @@ export default function ManagerForecast() {
         }))
       });
 
-      // Normalize demand data (mock is array, backend is { roomDemands: array })
-      setDemandData(demandRes.data?.roomDemands || demandRes.data || []);
+      // Normalize demand data (mock uses .occupancyPct/.trendDeltaPct, backend uses .occupancyRatePct/.demandChangePct)
+      const demandRaw = demandRes.data?.roomDemands || demandRes.data || [];
+      setDemandData(demandRaw.map(d => ({
+        ...d,
+        occupancyPct: d.occupancyPct ?? d.occupancyRatePct,
+        trendDeltaPct: d.trendDeltaPct ?? d.demandChangePct,
+      })));
     } catch (err) {
       console.error('Failed to load forecast data:', err);
       setError('Unable to retrieve latest forecast data.');

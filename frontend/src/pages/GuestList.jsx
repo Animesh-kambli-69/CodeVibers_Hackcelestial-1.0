@@ -9,6 +9,15 @@ import Skeleton from '../components/ui/Skeleton';
 import ErrorState from '../components/ui/ErrorState';
 import { apiRequest } from '../lib/api';
 
+// Mirrors backend RULE_CONFIG.cancellationRisk thresholds (decision-engine/config/thresholds.js) —
+// the guest list endpoint returns a raw probability, not a pre-classified risk level.
+function classifyRiskLevel(probability) {
+  if (probability === null || probability === undefined) return null;
+  if (probability >= 0.70) return 'HIGH';
+  if (probability >= 0.40) return 'MEDIUM';
+  return 'LOW';
+}
+
 export default function GuestList() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -25,7 +34,16 @@ export default function GuestList() {
     setError(null);
     try {
       const res = await apiRequest('/operations/guests');
-      setAllGuests(res.data || []);
+      // Normalize: backend nests stay info under currentStay and returns a raw
+      // cancellationRisk probability; GuestTable/GuestFilters expect flat fields.
+      const normalized = (res.data || []).map((g) => ({
+        ...g,
+        roomType: g.currentStay?.roomType || null,
+        arrivalDate: g.currentStay?.checkInDate || null,
+        cancellationProbability: g.cancellationRisk,
+        riskLevel: classifyRiskLevel(g.cancellationRisk),
+      }));
+      setAllGuests(normalized);
     } catch (err) {
       console.error('Failed to load guest list:', err);
       setError('Unable to retrieve guest directory.');

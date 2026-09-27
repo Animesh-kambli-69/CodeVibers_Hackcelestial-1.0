@@ -94,10 +94,9 @@ export function GuestFilters({ search, risk, roomType, onSearchChange, onRiskCha
           }}
         >
           <option value="ALL">All Categories</option>
-          <option value="Deluxe">Deluxe Room</option>
-          <option value="Suite">Suite</option>
-          <option value="Villa">Villa</option>
-          <option value="Standard">Standard</option>
+          <option value="STANDARD">Standard</option>
+          <option value="DELUXE">Deluxe Room</option>
+          <option value="SUITE">Suite</option>
         </select>
       </div>
 
