@@ -59,7 +59,7 @@ function createPublicRoutes(deps = {}) {
       } else {
         const guestRes = await pool.query(
           `INSERT INTO guests (name, email, phone, loyalty_tier, total_stays, special_requirements)
-           VALUES ($1, $2, '+91 99999 99999', 'NONE', 0, 'None') RETURNING id;`,
+           VALUES ($1, $2, '+91 99999 99999', 'STANDARD', 0, 'None') RETURNING id;`,
           [guestName || 'John Doe', generatedEmail]
         );
         guestId = guestRes.rows[0].id;
