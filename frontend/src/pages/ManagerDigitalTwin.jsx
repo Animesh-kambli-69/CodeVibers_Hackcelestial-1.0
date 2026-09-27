@@ -546,25 +546,27 @@ export default function ManagerDigitalTwin() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {twinState?.socialSignals && twinState.socialSignals.length > 0 ? (
-              twinState.socialSignals.slice(0, 4).map((sig, i) => (
-                <div key={i} style={{ padding: 12, border: `1px solid ${C.border}`, borderRadius: 8, background: '#FAFAFA' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.indigo }}>@{sig.platform || 'TravelSentinel'}</span>
-                    <span style={{
-                      fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-                      color: sig.sentiment === 'positive' ? C.success : sig.sentiment === 'negative' ? C.critical : C.sub,
-                    }}>
-                      {sig.sentiment || 'neutral'}
-                    </span>
+            {(() => {
+              const socialList = twinState?.social?.items || (Array.isArray(twinState?.social) ? twinState.social : twinState?.socialSignals) || [];
+              if (socialList.length > 0) {
+                return socialList.slice(0, 4).map((sig, i) => (
+                  <div key={i} style={{ padding: 12, border: `1px solid ${C.border}`, borderRadius: 8, background: '#FAFAFA' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: C.indigo }}>@{sig.platform || 'TravelSentinel'}</span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                        color: sig.sentiment === 'positive' ? C.success : sig.sentiment === 'negative' ? C.critical : C.sub,
+                      }}>
+                        {sig.sentiment || 'neutral'}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 12.5, color: C.text, lineHeight: 1.4 }}>
+                      "{sig.content || sig.text}"
+                    </div>
                   </div>
-                  <div style={{ fontSize: 12.5, color: C.text, lineHeight: 1.4 }}>
-                    "{sig.content || sig.text}"
-                  </div>
-                </div>
-              ))
-            ) : (
-              [
+                ));
+              }
+              return [
                 { platform: 'Twitter / X', content: 'Heavy coastal winds near South Beach. Flight transfers slightly delayed but resort shuttle running on schedule.', sentiment: 'neutral' },
                 { platform: 'TripAdvisor', content: 'Great indoor dining and spa services prepared during yesterday afternoon rain shower!', sentiment: 'positive' },
                 { platform: 'LocalTrafficAlert', content: 'Water accumulation on Coastal Hwy KM 14. Alternative scenic route recommended for arriving guests.', sentiment: 'negative' },
@@ -583,8 +585,8 @@ export default function ManagerDigitalTwin() {
                     "{sig.content}"
                   </div>
                 </div>
-              ))
-            )}
+              ));
+            })()}
           </div>
         </div>
 

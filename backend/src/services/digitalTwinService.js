@@ -259,9 +259,26 @@ class DigitalTwinService {
           recommendations: simulatedRecommendations,
           narrative,
         });
-        scenarioId = saved.id;
+        scenarioId = saved?.id || null;
       } catch (err) {
-        logger.warn({ error: err.message }, 'Failed to persist digital twin scenario');
+        logger.warn({ error: err.message }, 'Failed to persist digital twin scenario, retrying with anonymous createdBy');
+        if (userId) {
+          try {
+            const saved = await this.digitalTwinRepository.saveScenario({
+              createdBy: null,
+              label,
+              scenarioParams: params,
+              baselineState,
+              simulatedState,
+              impactSummary,
+              recommendations: simulatedRecommendations,
+              narrative,
+            });
+            scenarioId = saved?.id || null;
+          } catch (retryErr) {
+            logger.warn({ error: retryErr.message }, 'Failed to persist digital twin scenario with null user');
+          }
+        }
       }
     }
 
