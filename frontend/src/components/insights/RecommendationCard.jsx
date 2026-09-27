@@ -70,7 +70,7 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
       {/* Why Explanation */}
       <p style={{ fontSize: 13.5, color: '#66716C', margin: '0 0 10px', lineHeight: 1.5 }}>
         <strong style={{ color: '#17201C', fontWeight: 600 }}>Why: </strong>
-        {recommendation.whyText}
+        {recommendation.whyText || recommendation.reason || recommendation.body || recommendation.description || 'Action triggered by operational conditions.'}
       </p>
 
       {/* Suggested Action */}
@@ -84,7 +84,7 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
         color: '#17201C'
       }}>
         <strong style={{ color: '#167A65', fontWeight: 600 }}>Suggested Action: </strong>
-        {recommendation.suggestedAction}
+        {recommendation.suggestedAction || recommendation.action || 'Review and take recommended action.'}
       </div>
 
       {/* Supporting Data Drawer */}

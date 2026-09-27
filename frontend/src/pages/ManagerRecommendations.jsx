@@ -24,7 +24,8 @@ export default function ManagerRecommendations() {
     setError(null);
     try {
       const res = await apiRequest('/manager/recommendations');
-      setRecommendations(res.data || []);
+      const items = Array.isArray(res.data) ? res.data : (res.data?.items || res.items || []);
+      setRecommendations(items);
     } catch (err) {
       console.error('Failed to load recommendations:', err);
       setError('Unable to load AI recommendations.');
