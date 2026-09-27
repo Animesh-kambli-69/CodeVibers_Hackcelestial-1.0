@@ -5,8 +5,10 @@ import { AuthProvider, useAuth } from './AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { ROLE_HOME } from './lib/constants';
 
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import ForbiddenPage from './pages/ForbiddenPage';
+
 import ManagerDashboard from './pages/ManagerDashboard';
 import ManagerForecast from './pages/ManagerForecast';
 import ManagerRecommendations from './pages/ManagerRecommendations';
@@ -29,8 +31,8 @@ import { DataEntryDashboard, GuestDashboard } from './pages/Dashboards';
 
 function RootRedirect() {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
-  const target = ROLE_HOME[user.role] || '/login';
+  if (!user) return <LandingPage />;
+  const target = ROLE_HOME[user.role] || '/manager/dashboard';
   return <Navigate to={target} replace />;
 }
 

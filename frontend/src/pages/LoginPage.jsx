@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
-import { Eye, EyeOff, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Sparkles, AlertCircle, ArrowRight, Building2, BarChart3, UserCheck } from 'lucide-react';
 
 /* ─── Brand mark ─── */
 function BrandMark() {
@@ -118,7 +118,7 @@ function HeroPanel() {
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {[
             { label: 'Avg. occupancy lift', value: '+18%' },
-            { label: 'Guest satisfaction', value: '4.9★' },
+            { label: 'Guest satisfaction', value: '4.9 / 5' },
             { label: 'Decisions automated', value: '2,400+' },
           ].map((stat) => (
             <div key={stat.label} style={{
@@ -350,9 +350,9 @@ export default function LoginPage() {
           {/* Demo buttons */}
           <div style={{ display: 'flex', gap: 9 }}>
             {[
-              { key: 'manager', label: 'Resort Manager', icon: '🏨' },
-              { key: 'data-entry', label: 'Operations', icon: '📊' },
-              { key: 'guest', label: 'Guest', icon: '🛎️' },
+              { key: 'manager', label: 'Resort Manager', icon: <Building2 size={18} color="#167A65" /> },
+              { key: 'data-entry', label: 'Operations', icon: <BarChart3 size={18} color="#167A65" /> },
+              { key: 'guest', label: 'Guest', icon: <UserCheck size={18} color="#167A65" /> },
             ].map((d) => (
               <DemoButton key={d.key} icon={d.icon} label={d.label} onClick={() => handleDemo(d.key)} />
             ))}

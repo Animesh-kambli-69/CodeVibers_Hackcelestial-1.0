@@ -80,7 +80,7 @@ export default function GuestHome() {
             boxShadow: '0 4px 14px rgba(22,122,101,0.2)'
           }}>
             <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.9, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              {getGreeting()}, {profile?.name?.split(' ')[0] || 'Guest'} 👋
+              {getGreeting()}, {profile?.name?.split(' ')[0] || 'Guest'}
             </div>
             <h2 style={{
               fontFamily: "'Plus Jakarta Sans', sans-serif",
