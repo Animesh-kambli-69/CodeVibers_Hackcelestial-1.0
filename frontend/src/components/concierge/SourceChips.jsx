@@ -1,7 +1,8 @@
 import { FileText } from 'lucide-react';
 
 export function SourceChips({ sources = [], onSourceClick }) {
-  if (!sources || sources.length === 0) return null;
+  const list = Array.isArray(sources) ? sources : [];
+  if (!list || list.length === 0) return null;
 
   return (
     <div style={{ marginTop: 10, paddingTop: 8, borderTop: '1px solid rgba(23,32,28,0.06)' }}>
@@ -9,7 +10,7 @@ export function SourceChips({ sources = [], onSourceClick }) {
         Verified Resort Sources:
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        {sources.map((src) => (
+        {list.map((src) => (
           <button
             key={src.id || src.title}
             onClick={() => onSourceClick && onSourceClick(src)}

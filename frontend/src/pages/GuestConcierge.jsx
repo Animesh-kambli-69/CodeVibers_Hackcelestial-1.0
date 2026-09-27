@@ -34,7 +34,9 @@ export default function GuestConcierge() {
     const fetchPrefs = async () => {
       try {
         const res = await apiRequest('/guest/preferences');
-        setPreferences(res.data || []);
+        const raw = res.data;
+        const prefList = Array.isArray(raw) ? raw : (raw?.preferences || raw?.items || []);
+        setPreferences(prefList);
       } catch (err) {
         console.error('Failed to load guest preferences:', err);
       }

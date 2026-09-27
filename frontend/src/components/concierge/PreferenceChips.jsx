@@ -1,7 +1,8 @@
 import { Sparkles } from 'lucide-react';
 
 export function PreferenceChips({ preferences = [] }) {
-  if (!preferences || preferences.length === 0) return null;
+  const list = Array.isArray(preferences) ? preferences : (preferences?.preferences || preferences?.items || []);
+  if (!list || list.length === 0) return null;
 
   return (
     <div style={{
@@ -19,22 +20,25 @@ export function PreferenceChips({ preferences = [] }) {
         <Sparkles size={13} />
         <span>Personalised for you:</span>
       </div>
-      {preferences.map((p, i) => (
-        <span
-          key={i}
-          style={{
-            fontSize: 11.5,
-            fontWeight: 600,
-            padding: '2px 8px',
-            borderRadius: 12,
-            backgroundColor: '#FFFFFF',
-            color: '#5B63C7',
-            border: '1px solid rgba(91,99,199,0.3)'
-          }}
-        >
-          {typeof p === 'string' ? p : p.value}
-        </span>
-      ))}
+      {list.map((p, i) => {
+        const text = typeof p === 'string' ? p : (p.preferenceValue || p.value || p.category || 'Preference');
+        return (
+          <span
+            key={i}
+            style={{
+              fontSize: 11.5,
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: 12,
+              backgroundColor: '#FFFFFF',
+              color: '#5B63C7',
+              border: '1px solid rgba(91,99,199,0.3)'
+            }}
+          >
+            {text}
+          </span>
+        );
+      })}
     </div>
   );
 }

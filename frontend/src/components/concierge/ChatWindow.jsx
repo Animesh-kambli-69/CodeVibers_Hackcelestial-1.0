@@ -4,6 +4,7 @@ import TypingIndicator from './TypingIndicator';
 
 export function ChatWindow({ messages = [], loading = false, onSourceClick }) {
   const bottomRef = useRef(null);
+  const msgList = Array.isArray(messages) ? messages : [];
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -21,7 +22,7 @@ export function ChatWindow({ messages = [], loading = false, onSourceClick }) {
         flexDirection: 'column'
       }}
     >
-      {messages.map((msg, idx) => (
+      {msgList.map((msg, idx) => (
         <ChatMessage
           key={msg.id || idx}
           message={msg}
