@@ -30,6 +30,7 @@ OCCUPANCY_FEATURES = [
     "IsWeekend", "IsHoliday",
     "Lag7_TotalBookings", "Lag14_TotalBookings", "Lag30_TotalBookings",
     "Roll7_AvgADR", "Roll7_AvgLeadTime",
+    "TemperatureC", "PrecipitationMm", "WindSpeedKmh",
 ]
 
 GUEST_PREF_FEATURES = [
