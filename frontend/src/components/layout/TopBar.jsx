@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Menu, Activity, Bell } from 'lucide-react';
+import { Menu, Activity, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../AuthContext';
 import { Tooltip } from '../ui/Tooltip';
 import ChangePasswordModal from '../ChangePasswordModal';
 
 export function TopBar({ onMobileMenuOpen, title }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [mlStatus, setMlStatus] = useState('ok'); // 'ok' | 'down'
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
@@ -13,6 +15,11 @@ export function TopBar({ onMobileMenuOpen, title }) {
     // Simulated health check or API call
     setMlStatus('ok');
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const roleLabel = user?.role === 'manager'
     ? 'Resort Manager'
@@ -67,7 +74,7 @@ export function TopBar({ onMobileMenuOpen, title }) {
           </h2>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* ML Status Indicator */}
           <Tooltip content={mlStatus === 'ok' ? 'ML Engine Connected & Operational' : 'Predictions Temporarily Unavailable'}>
             <div style={{
@@ -100,11 +107,11 @@ export function TopBar({ onMobileMenuOpen, title }) {
             {roleLabel}
           </span>
 
-          {/* User Profile */}
+          {/* User Profile / Change Password Trigger */}
           <button 
             onClick={() => setIsPasswordModalOpen(true)}
             style={{ 
-              display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer',
               padding: '4px 8px', borderRadius: 8, transition: 'background 0.2s'
             }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0F7F4'}
@@ -112,9 +119,9 @@ export function TopBar({ onMobileMenuOpen, title }) {
             title="Click to change password"
           >
             <div style={{
-              width: 34,
-              height: 34,
-              borderRadius: 17,
+              width: 32,
+              height: 32,
+              borderRadius: 16,
               backgroundColor: '#167A65',
               color: '#FFFFFF',
               fontWeight: 700,
@@ -134,6 +141,36 @@ export function TopBar({ onMobileMenuOpen, title }) {
                 {user?.email || 'user@resort360.ai'}
               </div>
             </div>
+          </button>
+
+          {/* Sign Out Button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 12px',
+              borderRadius: 8,
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FEE2E2',
+              color: '#DC2626',
+              fontSize: 12.5,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              fontFamily: "'Inter', sans-serif",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#FEE2E2';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FEF2F2';
+            }}
+            title="Sign Out of Session"
+          >
+            <LogOut size={14} />
+            <span className="hidden sm:inline">Sign Out</span>
           </button>
         </div>
       </header>

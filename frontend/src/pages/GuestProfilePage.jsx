@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
-import { User, Mail, Phone, Award, Calendar, Heart, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Phone, Award, Calendar, Heart, CheckCircle2, LogOut, Lock, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import GuestLayout from '../components/layout/GuestLayout';
 import Skeleton from '../components/ui/Skeleton';
+import ChangePasswordModal from '../components/ChangePasswordModal';
+import { useAuth } from '../AuthContext';
 import { apiRequest } from '../lib/api';
 
 export default function GuestProfilePage() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
   const [preferences, setPreferences] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,11 +83,11 @@ export default function GuestProfilePage() {
               margin: '0 auto 12px',
               fontFamily: "'Plus Jakarta Sans', sans-serif"
             }}>
-              {profile?.name ? profile.name.charAt(0) : 'G'}
+              {profile?.name ? profile.name.charAt(0) : (user?.name ? user.name.charAt(0) : 'G')}
             </div>
 
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 700, color: '#17201C', margin: '0 0 4px' }}>
-              {profile?.name}
+              {profile?.name || user?.name || 'Valued Guest'}
             </h2>
 
             <div style={{
@@ -97,11 +109,13 @@ export default function GuestProfilePage() {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, fontSize: 13, color: '#66716C', flexWrap: 'wrap' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <Mail size={14} /> {profile?.email}
+                <Mail size={14} /> {profile?.email || user?.email}
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                <Phone size={14} /> {profile?.phone}
-              </span>
+              {profile?.phone && (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Phone size={14} /> {profile.phone}
+                </span>
+              )}
             </div>
           </div>
 
@@ -120,36 +134,42 @@ export default function GuestProfilePage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {preferences.map((p, idx) => (
-                <div key={idx} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderRadius: 10,
-                  backgroundColor: '#F7F8F6',
-                  border: '1px solid #E5EAE7'
-                }}>
-                  <div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#66716C', textTransform: 'uppercase' }}>
-                      {p.type}:{' '}
-                    </span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#17201C' }}>
-                      {p.value}
+              {preferences.length > 0 ? (
+                preferences.map((p, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    borderRadius: 10,
+                    backgroundColor: '#F7F8F6',
+                    border: '1px solid #E5EAE7'
+                  }}>
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#66716C', textTransform: 'uppercase' }}>
+                        {p.type}:{' '}
+                      </span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#17201C' }}>
+                        {p.value}
+                      </span>
+                    </div>
+                    <span style={{
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      padding: '3px 8px',
+                      borderRadius: 6,
+                      backgroundColor: '#DDEBE5',
+                      color: '#167A65'
+                    }}>
+                      {p.sourceLabel || 'Saved Preference'}
                     </span>
                   </div>
-                  <span style={{
-                    fontSize: 11.5,
-                    fontWeight: 600,
-                    padding: '3px 8px',
-                    borderRadius: 6,
-                    backgroundColor: '#DDEBE5',
-                    color: '#167A65'
-                  }}>
-                    {p.sourceLabel || 'Saved Preference'}
-                  </span>
+                ))
+              ) : (
+                <div style={{ fontSize: 13, color: '#66716C', padding: '12px', textAlign: 'center' }}>
+                  No preferences recorded yet.
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -159,6 +179,7 @@ export default function GuestProfilePage() {
             borderRadius: 16,
             border: '1px solid #E5EAE7',
             padding: 20,
+            marginBottom: 20,
             boxShadow: '0 2px 8px rgba(23,32,28,0.03)'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#17201C', fontWeight: 700, fontSize: 15, marginBottom: 14 }}>
@@ -167,38 +188,124 @@ export default function GuestProfilePage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {bookings.map((b) => (
-                <div key={b.id} style={{
-                  padding: 14,
-                  borderRadius: 12,
-                  backgroundColor: b.status === 'UPCOMING' ? '#F0F7F4' : '#F7F8F6',
-                  border: `1px solid ${b.status === 'UPCOMING' ? '#DDEBE5' : '#E5EAE7'}`
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#17201C' }}>
-                      {b.roomType}
-                    </span>
-                    <span style={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      backgroundColor: b.status === 'UPCOMING' ? '#DDEBE5' : '#E5EAE7',
-                      color: b.status === 'UPCOMING' ? '#167A65' : '#66716C'
-                    }}>
-                      {b.status}
-                    </span>
+              {bookings.length > 0 ? (
+                bookings.map((b) => (
+                  <div key={b.id} style={{
+                    padding: 14,
+                    borderRadius: 12,
+                    backgroundColor: b.status === 'UPCOMING' ? '#F0F7F4' : '#F7F8F6',
+                    border: `1px solid ${b.status === 'UPCOMING' ? '#DDEBE5' : '#E5EAE7'}`
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: '#17201C' }}>
+                        {b.roomType}
+                      </span>
+                      <span style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 4,
+                        backgroundColor: b.status === 'UPCOMING' ? '#DDEBE5' : '#E5EAE7',
+                        color: b.status === 'UPCOMING' ? '#167A65' : '#66716C'
+                      }}>
+                        {b.status}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 13, color: '#66716C' }}>{b.resortName}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#17201C', marginTop: 6 }}>
+                      {b.dates} · {b.guests}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 13, color: '#66716C' }}>{b.resortName}</div>
-                  <div style={{ fontSize: 12.5, fontWeight: 600, color: '#17201C', marginTop: 6 }}>
-                    {b.dates} · {b.guests}
-                  </div>
+                ))
+              ) : (
+                <div style={{ fontSize: 13, color: '#66716C', padding: '12px', textAlign: 'center' }}>
+                  No previous or upcoming stays found.
                 </div>
-              ))}
+              )}
+            </div>
+          </div>
+
+          {/* Account Security & Sign Out Section */}
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 16,
+            border: '1px solid #E5EAE7',
+            padding: 20,
+            marginBottom: 20,
+            boxShadow: '0 2px 8px rgba(23,32,28,0.03)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#17201C', fontWeight: 700, fontSize: 15, marginBottom: 16 }}>
+              <ShieldCheck size={18} color="#167A65" />
+              <span>Account & Security</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {/* Change Password Button */}
+              <button
+                onClick={() => setIsPasswordModalOpen(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  backgroundColor: '#F7F8F6',
+                  border: '1px solid #E5EAE7',
+                  cursor: 'pointer',
+                  color: '#17201C',
+                  fontSize: 13.5,
+                  fontWeight: 600,
+                  transition: 'background 0.15s',
+                  textAlign: 'left'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0F7F4'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F7F8F6'}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Lock size={16} color="#167A65" />
+                  Change Account Password
+                </span>
+                <span style={{ fontSize: 12, color: '#66716C' }}>Edit ›</span>
+              </button>
+
+              {/* Sign Out Button */}
+              <button
+                onClick={handleSignOut}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  backgroundColor: '#FEF2F2',
+                  border: '1px solid #FEE2E2',
+                  cursor: 'pointer',
+                  color: '#DC2626',
+                  fontSize: 14,
+                  fontWeight: 700,
+                  transition: 'all 0.15s',
+                  marginTop: 6
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FEE2E2';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FEF2F2';
+                }}
+              >
+                <LogOut size={16} />
+                Sign Out of Guest Account
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </GuestLayout>
   );
 }
