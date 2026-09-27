@@ -17,7 +17,9 @@ export default function OperationsStaffing() {
     setError(null);
     try {
       const res = await apiRequest('/operations/staffing');
-      setStaffingList(res.data || []);
+      const raw = res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.staffing || raw?.items || []);
+      setStaffingList(list);
     } catch (err) {
       console.error('Failed to load staffing data:', err);
       setError('Unable to load staffing allocation.');

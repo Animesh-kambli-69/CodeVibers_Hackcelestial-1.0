@@ -21,8 +21,13 @@ export default function GuestProfilePage() {
           apiRequest('/guest/bookings')
         ]);
         setProfile(profRes.data);
-        setPreferences(prefRes.data || []);
-        setBookings(bookRes.data || []);
+        const rawPrefs = prefRes.data;
+        const prefList = Array.isArray(rawPrefs) ? rawPrefs : (rawPrefs?.preferences || []);
+        setPreferences(prefList);
+
+        const rawBooks = bookRes.data;
+        const bookList = Array.isArray(rawBooks) ? rawBooks : (rawBooks?.items || rawBooks?.bookings || []);
+        setBookings(bookList);
       } catch (err) {
         console.error('Failed to load guest profile data:', err);
       } finally {

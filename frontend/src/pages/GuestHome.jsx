@@ -36,7 +36,9 @@ export default function GuestHome() {
           apiRequest('/guest/resort-info')
         ]);
         setProfile(profRes.data);
-        setCatalog(catalogRes.data || []);
+        const rawCatalog = catalogRes.data;
+        const catalogList = Array.isArray(rawCatalog) ? rawCatalog : (rawCatalog?.items || []);
+        setCatalog(catalogList);
       } catch (err) {
         console.error('Failed to load guest home data:', err);
       } finally {
@@ -46,11 +48,12 @@ export default function GuestHome() {
     loadData();
   }, []);
 
-  const categories = Array.from(new Set(catalog.map((i) => i.category)));
+  const safeCatalog = Array.isArray(catalog) ? catalog : [];
+  const categories = Array.from(new Set(safeCatalog.map((i) => i.category || 'General')));
 
   const filteredCatalog = selectedCategory === 'ALL'
-    ? catalog
-    : catalog.filter((i) => i.category === selectedCategory);
+    ? safeCatalog
+    : safeCatalog.filter((i) => i.category === selectedCategory);
 
   const handleConciergeSubmit = (e) => {
     e.preventDefault();

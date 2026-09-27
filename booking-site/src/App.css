@@ -1,184 +1,949 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* ========================================================================= */
+/* Standalone Luxury Booking Site Styling                                   */
+/* ========================================================================= */
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-}
-
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#center {
+.booking-app-container {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+  background-color: #F7F8F6;
+  color: #17201C;
+  font-family: 'Inter', sans-serif;
 }
 
-#next-steps {
+/* Navbar */
+.booking-navbar {
+  background-color: #0D3B31;
+  padding: 16px 48px;
   display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-}
-
-#next-steps ul {
-  list-style: none;
-  padding: 0;
+.nav-brand {
   display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+  align-items: center;
+  gap: 14px;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.brand-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.ticks {
+.brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.brand-subtitle {
+  color: #D97706;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #FFFFFF;
+}
+
+.staff-portal-btn {
+  padding: 8px 18px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.staff-portal-btn:hover {
+  background-color: #167A65;
+  border-color: #167A65;
+}
+
+/* ========================================================================= */
+/* Hero Section                                                             */
+/* ========================================================================= */
+
+.booking-hero {
+  background: linear-gradient(135deg, #092620 0%, #164E43 100%);
+  padding: 60px 48px 80px;
+  color: #FFFFFF;
+  text-align: center;
   position: relative;
+  overflow: hidden;
+}
+
+.booking-hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(217, 119, 6, 0.2);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  color: #FBBF24;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-size: 42px;
+  font-weight: 800;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -1px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.hero-description {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+/* ========================================================================= */
+/* Main Layout Grid                                                         */
+/* ========================================================================= */
+
+.booking-layout-grid {
+  max-width: 1280px;
+  margin: -40px auto 60px;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: 32px;
+  position: relative;
+  z-index: 10;
   width: 100%;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
+.section-header {
+  margin-bottom: 20px;
+}
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #66716C;
+  margin-top: 4px;
+}
+
+/* Room Cards */
+.room-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 2px solid #E5EAE7;
+  display: grid;
+  grid-template-columns: 200px 1fr 40px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.room-card:hover {
+  transform: translateY(-2px);
+  border-color: #167A65;
+  box-shadow: 0 12px 28px rgba(22, 122, 101, 0.12);
+}
+
+.room-card-selected {
+  border-color: #167A65;
+  background-color: #FAFDFB;
+  box-shadow: 0 10px 30px rgba(22, 122, 101, 0.15);
+}
+
+.room-card-img-wrap {
+  position: relative;
+  height: 100%;
+  min-height: 150px;
+}
+
+.room-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room-card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(13, 59, 49, 0.85);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.room-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.room-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.room-type-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  color: #167A65;
+  letter-spacing: 1px;
+}
+
+.room-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-top: 2px;
+}
+
+.room-card-price {
+  text-align: right;
+}
+
+.price-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.price-unit {
+  font-size: 12px;
+  color: #66716C;
+  margin-left: 2px;
+}
+
+.room-specs-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #4A5550;
+  margin: 10px 0 14px;
+}
+
+.room-specs-row span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.room-amenities-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.amenity-chip {
+  padding: 3px 8px;
+  background: #F0F4F2;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #2D3748;
+  font-weight: 500;
+}
+
+.room-select-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 16px;
+}
+
+.radio-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.radio-circle-active {
+  border-color: #167A65;
+  background-color: #FFFFFF;
+}
+
+.radio-inner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #167A65;
+}
+
+/* ========================================================================= */
+/* Reservation Form Sidebar                                                 */
+/* ========================================================================= */
+
+.booking-sidebar {
+  position: sticky;
+  top: 90px;
+  align-self: start;
+}
+
+.reservation-form-panel {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #E5EAE7;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.panel-badge {
+  padding: 4px 10px;
+  background: #E6F4F1;
+  color: #167A65;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.form-group-dates,
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.input-group {
+  margin-bottom: 14px;
+}
+
+.input-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4A5550;
+  margin-bottom: 6px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 12px;
+  color: #66716C;
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  font-size: 13px;
+  color: #17201C;
+  background: #FAFAFA;
+  transition: all 0.2s ease;
+}
+
+.input-with-icon .form-input {
+  padding-left: 36px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #167A65;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(22, 122, 101, 0.15);
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+/* Live Cost Calculator Box */
+.live-cost-calculator {
+  background: #F8FAF9;
+  border: 1px dashed #CBD5E1;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 18px 0;
+}
+
+.cost-calc-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #167A65;
+  margin-bottom: 12px;
+}
+
+.calc-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #66716C;
+  margin-bottom: 6px;
+}
+
+.calc-total-divider {
+  height: 1px;
+  background: #E2E8F0;
+  margin: 10px 0;
+}
+
+.calc-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #17201C;
+}
+
+.total-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #167A65;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.currency-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #66716C;
+}
+
+.confirm-booking-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #167A65 0%, #0D3B31 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 20px rgba(22, 122, 101, 0.25);
+  transition: all 0.2s ease;
+}
+
+.confirm-booking-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(22, 122, 101, 0.35);
+}
+
+.confirm-booking-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.trust-guarantee-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: #166534;
+  font-weight: 500;
+}
+
+/* ========================================================================= */
+/* Booked Confirmation UI (URL Synchronized)                                */
+/* ========================================================================= */
+
+.confirmation-view-container {
+  max-width: 960px;
+  margin: 40px auto 80px;
+  padding: 0 24px;
+  width: 100%;
+}
+
+.confirmation-banner {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #15803D;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.banner-title {
+  font-size: 38px;
+  font-weight: 800;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+}
+
+.banner-subtitle {
+  font-size: 15px;
+  color: #66716C;
+  max-width: 600px;
+  margin: 0 auto 16px;
+  line-height: 1.5;
+}
+
+.url-storage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #E6F4F1;
+  border: 1px solid #B2DFDB;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #0D3B31;
+}
+
+.voucher-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1px solid #E5EAE7;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.voucher-header {
+  background: #0D3B31;
+  padding: 24px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+.voucher-eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #D97706;
+  font-weight: 700;
+}
+
+.voucher-code {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-top: 2px;
+}
+
+.voucher-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ADE80;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #4ADE80;
+  border-radius: 50%;
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.voucher-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  padding: 36px;
+}
+
+.voucher-room-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.voucher-room-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.voucher-room-info {
+  margin-top: 18px;
+}
+
+.room-tier-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #167A65;
+  background: #E6F4F1;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.voucher-room-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #17201C;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 12px;
+}
+
+.voucher-room-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #4A5550;
+  background: #F0F4F2;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* Stay Dates in Voucher */
+.stay-dates-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #F8FAF9;
+  border: 1px solid #E5EAE7;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.date-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #66716C;
+}
+
+.date-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: #17201C;
+  margin: 2px 0;
+}
+
+.date-time {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.stay-duration-divider {
+  display: flex;
+  align-items: center;
+}
+
+.duration-pill {
+  background: #167A65;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.guest-info-table {
+  background: #FFFFFF;
+  border: 1px solid #E5EAE7;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 13px;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.row-key {
+  color: #66716C;
+}
+
+.row-val {
+  color: #17201C;
+  font-weight: 600;
+}
+
+.deposit-tag {
+  color: #167A65;
+  background: #E6F4F1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.cost-breakdown-card {
+  background: #FAFDFB;
+  border: 1px solid #DCFCE7;
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.breakdown-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #167A65;
+  margin-bottom: 12px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #66716C;
+  margin-bottom: 6px;
+}
+
+.breakdown-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #DCFCE7;
+}
+
+.total-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #17201C;
+}
+
+.total-amount {
+  font-size: 20px;
+  font-weight: 800;
+  color: #167A65;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Actions Toolbar */
+.voucher-actions-bar {
+  background: #F8FAF9;
+  border-top: 1px solid #E5EAE7;
+  padding: 20px 36px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.action-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.copy-url-btn {
+  background: #167A65;
+  color: #FFFFFF;
+  border: 1px solid #167A65;
+}
+
+.copy-url-btn:hover {
+  background: #0D3B31;
+}
+
+.print-btn {
+  background: #FFFFFF;
+  color: #17201C;
+  border: 1px solid #CBD5E1;
+}
+
+.print-btn:hover {
+  background: #F1F5F9;
+}
+
+.new-booking-btn {
+  background: transparent;
+  color: #66716C;
+  border: 1px solid transparent;
+}
+
+.new-booking-btn:hover {
+  color: #17201C;
+  background: #E2E8F0;
+}
+
+/* Footer */
+.booking-footer {
+  margin-top: auto;
+  background: #0D3B31;
+  padding: 24px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .booking-layout-grid {
+    grid-template-columns: 1fr;
   }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
+  .voucher-grid {
+    grid-template-columns: 1fr;
+  }
+  .booking-navbar {
+    padding: 16px 20px;
   }
 }

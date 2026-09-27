@@ -21,7 +21,9 @@ export default function CancellationRisk() {
     setError(null);
     try {
       const res = await apiRequest('/operations/cancellation-risk');
-      setRiskList(res.data || []);
+      const raw = res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.bookings || raw?.cohort || raw?.items || []);
+      setRiskList(list);
     } catch (err) {
       console.error('Failed to load cancellation risk list:', err);
       setError('Unable to load cancellation risk cohort.');

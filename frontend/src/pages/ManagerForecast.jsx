@@ -34,34 +34,36 @@ export default function ManagerForecast() {
 
       // Normalize occupancy data (mock uses .points and .occupancy, backend uses .forecast and .predictedOccupancy)
       const occRaw = occRes.data || {};
-      const occPoints = occRaw.forecast || occRaw.points || [];
+      const occPoints = Array.isArray(occRaw.forecast) ? occRaw.forecast : (Array.isArray(occRaw.points) ? occRaw.points : (occRaw.forecast?.predictions || []));
       setOccupancyData({
         ...occRaw,
         points: occPoints.map(p => ({
           ...p,
-          occupancy: p.occupancy ?? p.predictedOccupancy,
-          day: p.day || p.dayOfWeek || new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }),
+          occupancy: p.occupancy ?? p.predictedOccupancy ?? 0,
+          day: p.day || p.dayOfWeek || (p.date ? new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }) : 'Day'),
         })),
         peakDay: occRaw.peak || occRaw.peakDay,
       });
 
       // Normalize booking data (mock uses .points, backend uses .forecast)
       const bookRaw = bookRes.data || {};
-      const bookPoints = bookRaw.forecast || bookRaw.points || [];
+      const bookPoints = Array.isArray(bookRaw.forecast) ? bookRaw.forecast : (Array.isArray(bookRaw.points) ? bookRaw.points : (bookRaw.forecast?.predictions || []));
+      const bookHistory = Array.isArray(bookRaw.history) ? bookRaw.history : [];
       setBookingData({
         ...bookRaw,
         points: bookPoints.map(p => ({
           ...p,
-          day: p.day || p.dayOfWeek || new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }),
+          day: p.day || p.dayOfWeek || (p.date ? new Date(p.date).toLocaleDateString('en-US', { weekday: 'short' }) : 'Day'),
         })),
-        history: (bookRaw.history || []).map(h => ({
+        history: bookHistory.map(h => ({
           ...h,
-          day: h.day || new Date(h.date).toLocaleDateString('en-US', { weekday: 'short' }),
+          day: h.day || (h.date ? new Date(h.date).toLocaleDateString('en-US', { weekday: 'short' }) : 'Day'),
         }))
       });
 
       // Normalize demand data (mock is array, backend is { roomDemands: array })
-      setDemandData(demandRes.data?.roomDemands || demandRes.data || []);
+      const demandList = Array.isArray(demandRes.data?.roomDemands) ? demandRes.data.roomDemands : (Array.isArray(demandRes.data) ? demandRes.data : []);
+      setDemandData(demandList);
     } catch (err) {
       console.error('Failed to load forecast data:', err);
       setError('Unable to retrieve latest forecast data.');

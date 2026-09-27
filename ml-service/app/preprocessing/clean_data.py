@@ -71,13 +71,13 @@ def filter_invalid_records(df):
 def engineer_features(df):
     """Engineers key features required for ML models (Cancellation, Booking Demand, Guest Preferences)."""
     print("[4/6] Engineering ML features...")
-    
+
     # Total Stay Duration
     df["TotalStays"] = df["StaysInWeekendNights"] + df["StaysInWeekNights"]
-    
+
     # Room Type Changed Flag (Reserved vs Assigned)
     df["RoomTypeChanged"] = (df["ReservedRoomType"] != df["AssignedRoomType"]).astype(int)
-    
+
     # Family Flag
     df["IsFamily"] = ((df["Children"] > 0) | (df["Babies"] > 0)).astype(int)
     

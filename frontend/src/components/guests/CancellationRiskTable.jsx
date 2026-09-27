@@ -8,7 +8,9 @@ export function CancellationRiskTable({ cohort = [] }) {
   const navigate = useNavigate();
   const [expandedId, setExpandedId] = useState(null);
 
-  if (!cohort || cohort.length === 0) {
+  const list = Array.isArray(cohort) ? cohort : (cohort?.bookings || cohort?.items || []);
+
+  if (!list || list.length === 0) {
     return (
       <div style={{ padding: 40, textAlign: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, border: '1px solid #E5EAE7', color: '#66716C' }}>
         No high-risk bookings found matching the criteria.
@@ -38,7 +40,7 @@ export function CancellationRiskTable({ cohort = [] }) {
             </tr>
           </thead>
           <tbody>
-            {cohort.map((item) => {
+            {list.map((item) => {
               const isExpanded = expandedId === item.id;
               return (
                 <g key={item.id}>

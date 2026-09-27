@@ -58,12 +58,13 @@ export default function ManagerRecommendations() {
 
   const handleStatusChange = (id, newStatus) => {
     setRecommendations((prev) =>
-      prev.map((rec) => (rec.id === id ? { ...rec, status: newStatus } : rec))
+      (Array.isArray(prev) ? prev : []).map((rec) => (rec.id === id ? { ...rec, status: newStatus } : rec))
     );
   };
 
   // Filter recommendations
-  const filteredList = recommendations.filter((rec) => {
+  const safeRecs = Array.isArray(recommendations) ? recommendations : [];
+  const filteredList = safeRecs.filter((rec) => {
     if (priorityParam !== 'ALL' && rec.priority !== priorityParam) return false;
     if (categoryParam !== 'ALL' && rec.category !== categoryParam) return false;
     return true;

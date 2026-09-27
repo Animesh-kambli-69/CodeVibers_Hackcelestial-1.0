@@ -17,8 +17,9 @@ export default function GuestRequests() {
     setLoading(true);
     try {
       const res = await apiRequest('/guest/service-requests');
-      // Map the backend/mock data to the expected frontend format
-      const mappedReqs = res.data.map(r => ({
+      const rawData = res.data;
+      const list = Array.isArray(rawData) ? rawData : (rawData?.requests || rawData?.items || []);
+      const mappedReqs = list.map(r => ({
         id: r.id,
         type: r.type,
         status: r.status,

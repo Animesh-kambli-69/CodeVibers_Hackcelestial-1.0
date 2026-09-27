@@ -17,7 +17,9 @@ export default function OperationsRequests() {
     setError(null);
     try {
       const res = await apiRequest('/operations/service-requests');
-      setRequests(res.data || []);
+      const raw = res.data;
+      const list = Array.isArray(raw) ? raw : (raw?.requests || raw?.items || []);
+      setRequests(list);
     } catch (err) {
       console.error('Failed to load service requests:', err);
       setError('Unable to load service requests.');
@@ -32,7 +34,7 @@ export default function OperationsRequests() {
 
   const handleStatusChange = async (id, newStatus) => {
     setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
+      (Array.isArray(prev) ? prev : []).map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
   };
 
