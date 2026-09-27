@@ -31,9 +31,19 @@ export default function OperationsRequests() {
   }, []);
 
   const handleStatusChange = async (id, newStatus) => {
+    const previous = requests;
     setRequests((prev) =>
       prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
     );
+    try {
+      await apiRequest(`/operations/service-requests/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+      });
+    } catch (err) {
+      console.error('Failed to update request status:', err);
+      setRequests(previous);
+    }
   };
 
   return (

@@ -12,6 +12,7 @@ function createManagerController({
   recommendationService,
   insightService,
   feedbackService,
+  pricingService,
 }) {
   const getDashboard = asyncHandler(async (req, res) => {
     const [kpis, recsRes] = await Promise.all([
@@ -84,6 +85,12 @@ function createManagerController({
     return respond.ok(res, result);
   });
 
+  const getPricingRecommendations = asyncHandler(async (req, res) => {
+    const windowDays = req.query.window || 30;
+    const result = await pricingService.getPricingRecommendations(windowDays);
+    return respond.ok(res, result);
+  });
+
   return {
     getDashboard,
     getBookingForecast,
@@ -93,6 +100,7 @@ function createManagerController({
     listRecommendations,
     patchRecommendation,
     getSentiment,
+    getPricingRecommendations,
   };
 }
 

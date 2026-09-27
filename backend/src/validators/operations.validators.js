@@ -32,10 +32,34 @@ const roomIdParamSchema = {
   }),
 };
 
+const requestIdParamSchema = {
+  params: z.object({
+    requestId: uuidSchema,
+  }),
+};
+
+const listServiceRequestsQuerySchema = {
+  query: z.object({
+    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']).optional(),
+  }),
+};
+
+const updateServiceRequestStatusSchema = {
+  params: z.object({
+    requestId: uuidSchema,
+  }),
+  body: z.object({
+    status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']),
+  }),
+};
+
 module.exports = {
   listGuestsQuerySchema,
   guestIdParamSchema,
   cancellationRiskQuerySchema,
   bookingIdParamSchema,
   roomIdParamSchema,
+  requestIdParamSchema,
+  listServiceRequestsQuerySchema,
+  updateServiceRequestStatusSchema,
 };

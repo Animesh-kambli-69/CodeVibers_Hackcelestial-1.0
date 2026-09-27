@@ -26,6 +26,20 @@ class RoomRepository {
     return counts;
   }
 
+  async getAverageBasePriceByType() {
+    const query = `
+      SELECT room_type, AVG(base_price) as avg_price
+      FROM rooms
+      GROUP BY room_type;
+    `;
+    const res = await this.pool.query(query);
+    const prices = { STANDARD: 0, DELUXE: 0, SUITE: 0 };
+    res.rows.forEach((row) => {
+      prices[row.room_type] = parseFloat(row.avg_price);
+    });
+    return prices;
+  }
+
   async listRooms() {
     const query = `
       SELECT id, room_number, room_type, max_occupancy, base_price, status

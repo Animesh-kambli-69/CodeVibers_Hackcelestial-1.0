@@ -25,8 +25,16 @@ const submitFeedbackSchema = {
   }),
 };
 
+const createServiceRequestSchema = {
+  body: z.object({
+    type: z.string().min(1, { message: 'type is required' }).max(80),
+    description: z.string().max(1000).optional().nullable(),
+  }),
+};
+
 module.exports = {
   chatBodySchema,
   resortInfoQuerySchema,
   submitFeedbackSchema,
+  createServiceRequestSchema,
 };

@@ -6,6 +6,8 @@ const {
   cancellationRiskQuerySchema,
   bookingIdParamSchema,
   roomIdParamSchema,
+  listServiceRequestsQuerySchema,
+  updateServiceRequestStatusSchema,
 } = require('../validators/operations.validators');
 
 function createOperationsRoutes(operationsController) {
@@ -23,6 +25,10 @@ function createOperationsRoutes(operationsController) {
   router.patch('/bookings/:bookingId/check-out', validate(bookingIdParamSchema), operationsController.checkOutBooking);
   router.patch('/bookings/:bookingId/cancel', validate(bookingIdParamSchema), operationsController.cancelBooking);
   router.patch('/rooms/:roomId/complete-maintenance', validate(roomIdParamSchema), operationsController.completeRoomMaintenance);
+
+  // Service Requests
+  router.get('/service-requests', validate(listServiceRequestsQuerySchema), operationsController.listServiceRequests);
+  router.patch('/service-requests/:requestId/status', validate(updateServiceRequestStatusSchema), operationsController.updateServiceRequestStatus);
 
   return router;
 }

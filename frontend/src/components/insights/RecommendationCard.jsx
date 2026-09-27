@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, CheckCircle, XCircle, Sparkles } from 'lucide-react';
 import { formatProbability } from '../../lib/utils';
 import { Badge } from '../ui/Badge';
+import { apiRequest } from '../../lib/api';
 
 export function RecommendationCard({ recommendation, onStatusChange }) {
   const [expanded, setExpanded] = useState(false);
@@ -11,9 +12,20 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
   const priorityVariant = recommendation.priority === 'HIGH' ? 'risk-high' : recommendation.priority === 'MEDIUM' ? 'risk-medium' : 'brand';
 
   const handleAction = async (newStatus) => {
-    setStatus(newStatus);
-    if (onStatusChange) {
-      onStatusChange(recommendation.id, newStatus);
+    setLoading(true);
+    try {
+      await apiRequest(`/manager/recommendations/${recommendation.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
+      });
+      setStatus(newStatus);
+      if (onStatusChange) {
+        onStatusChange(recommendation.id, newStatus);
+      }
+    } catch (err) {
+      console.error('Failed to update recommendation status:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,7 +82,7 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
       {/* Why Explanation */}
       <p style={{ fontSize: 13.5, color: '#66716C', margin: '0 0 10px', lineHeight: 1.5 }}>
         <strong style={{ color: '#17201C', fontWeight: 600 }}>Why: </strong>
-        {recommendation.whyText}
+        {recommendation.reason}
       </p>
 
       {/* Suggested Action */}
@@ -151,6 +163,7 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button
               onClick={() => handleAction('DISMISSED')}
+              disabled={loading}
               style={{
                 padding: '6px 14px',
                 borderRadius: 6,
@@ -159,13 +172,15 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
                 color: '#66716C',
                 fontWeight: 600,
                 fontSize: 13,
-                cursor: 'pointer'
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.6 : 1
               }}
             >
               Dismiss
             </button>
             <button
               onClick={() => handleAction('ACCEPTED')}
+              disabled={loading}
               style={{
                 padding: '6px 16px',
                 borderRadius: 6,
@@ -174,7 +189,8 @@ export function RecommendationCard({ recommendation, onStatusChange }) {
                 color: '#FFFFFF',
                 fontWeight: 600,
                 fontSize: 13,
-                cursor: 'pointer'
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.6 : 1
               }}
             >
               Accept Recommendation

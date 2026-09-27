@@ -9,6 +9,7 @@ function createGuestController({
   resortInfoService,
   conciergeService,
   feedbackService,
+  serviceRequestService,
 }) {
   const getProfile = asyncHandler(async (req, res) => {
     const result = await guestSelfService.getProfile(req.auth.guestId);
@@ -61,6 +62,17 @@ function createGuestController({
     return respond.ok(res, result);
   });
 
+  const listServiceRequests = asyncHandler(async (req, res) => {
+    const result = await serviceRequestService.listForGuest(req.auth.guestId);
+    return respond.ok(res, result);
+  });
+
+  const createServiceRequest = asyncHandler(async (req, res) => {
+    const { type, description } = req.body;
+    const result = await serviceRequestService.createForGuest(req.auth.guestId, { type, description });
+    return respond.ok(res, result);
+  });
+
   return {
     getProfile,
     getPreferences,
@@ -69,6 +81,8 @@ function createGuestController({
     postChat,
     getPendingFeedback,
     submitFeedback,
+    listServiceRequests,
+    createServiceRequest,
   };
 }
 

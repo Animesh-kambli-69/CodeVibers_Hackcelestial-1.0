@@ -35,6 +35,14 @@ const RULE_CONFIG = Object.freeze({
     MEDIUM: 2,
     LOW: 1,
   },
+
+  // Dynamic Pricing: suggested ADR change (%) per demand band (R5).
+  // Deterministic and explainable — never applied automatically (api.md human-in-the-loop principle).
+  pricingAdjustmentPct: {
+    HIGH: 12.0,
+    MEDIUM: 0.0,
+    LOW: -10.0,
+  },
 });
 
 module.exports = RULE_CONFIG;

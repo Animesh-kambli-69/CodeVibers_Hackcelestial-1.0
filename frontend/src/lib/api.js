@@ -95,16 +95,7 @@ async function resolveMock(path, init = {}) {
 }
 
 export async function apiRequest(path, init = {}) {
-  const cleanPath = path.split('?')[0];
-  const phase2Endpoints = [
-    '/manager/pricing-recommendations',
-    '/manager/sentiment',
-    '/operations/staffing',
-    '/operations/service-requests',
-    '/guest/service-requests'
-  ];
-
-  if (import.meta.env.VITE_USE_MOCKS === 'true' || phase2Endpoints.includes(cleanPath)) {
+  if (import.meta.env.VITE_USE_MOCKS === 'true') {
     return resolveMock(path, init);
   }
 

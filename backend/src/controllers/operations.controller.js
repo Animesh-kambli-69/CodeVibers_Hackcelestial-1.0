@@ -10,6 +10,7 @@ function createOperationsController({
   cancellationService,
   staffingService,
   bookingLifecycleService,
+  serviceRequestService,
 }) {
   const getDashboard = asyncHandler(async (req, res) => {
     const [kpis, recentGuestsRes] = await Promise.all([
@@ -84,6 +85,19 @@ function createOperationsController({
     return respond.ok(res, result);
   });
 
+  const listServiceRequests = asyncHandler(async (req, res) => {
+    const { status } = req.query;
+    const result = await serviceRequestService.listForOperations({ status });
+    return respond.ok(res, result);
+  });
+
+  const updateServiceRequestStatus = asyncHandler(async (req, res) => {
+    const { requestId } = req.params;
+    const { status } = req.body;
+    const result = await serviceRequestService.updateStatus(requestId, status);
+    return respond.ok(res, result);
+  });
+
   return {
     getDashboard,
     listGuests,
@@ -95,6 +109,8 @@ function createOperationsController({
     checkOutBooking,
     cancelBooking,
     completeRoomMaintenance,
+    listServiceRequests,
+    updateServiceRequestStatus,
   };
 }
 

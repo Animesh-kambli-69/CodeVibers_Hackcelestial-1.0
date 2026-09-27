@@ -27,6 +27,7 @@ const SocialSignalRepository = require('./repositories/socialSignalRepository');
 const DigitalTwinRepository = require('./repositories/digitalTwinRepository');
 const StaffRepository = require('./repositories/staffRepository');
 const FeedbackRepository = require('./repositories/feedbackRepository');
+const ServiceRequestRepository = require('./repositories/serviceRequestRepository');
 
 // Services
 const MlService = require('./services/mlService');
@@ -51,6 +52,8 @@ const BookingLifecycleService = require('./services/bookingLifecycleService');
 const UserManagementService = require('./services/userManagementService');
 const GuestAccountService = require('./services/guestAccountService');
 const FeedbackService = require('./services/feedbackService');
+const ServiceRequestService = require('./services/serviceRequestService');
+const PricingService = require('./services/pricingService');
 
 // Controllers & Routes
 const createAuthController = require('./controllers/auth.controller');
@@ -111,6 +114,7 @@ function createApp(injectedDeps = {}) {
   const digitalTwinRepo = injectedDeps.digitalTwinRepository || new DigitalTwinRepository(pool);
   const staffRepo = injectedDeps.staffRepository || new StaffRepository(pool);
   const feedbackRepo = injectedDeps.feedbackRepository || new FeedbackRepository(pool);
+  const serviceRequestRepo = injectedDeps.serviceRequestRepository || new ServiceRequestRepository(pool);
 
   const mlService = injectedDeps.mlService || new MlService();
   const aiService = injectedDeps.aiService || new AiService();
@@ -133,6 +137,10 @@ function createApp(injectedDeps = {}) {
   const weatherService = injectedDeps.weatherService || new WeatherService();
   const socialSignalService = injectedDeps.socialSignalService || new SocialSignalService();
   const staffingService = injectedDeps.staffingService || new StaffingService(staffRepo, bookingRepo);
+  const serviceRequestService =
+    injectedDeps.serviceRequestService || new ServiceRequestService(serviceRequestRepo, bookingRepo);
+  const pricingService =
+    injectedDeps.pricingService || new PricingService(roomDemandService, roomRepo);
   const bookingLifecycleService =
     injectedDeps.bookingLifecycleService ||
     new BookingLifecycleService(bookingRepo, roomRepo, guestAccountService, feedbackService);
@@ -163,6 +171,7 @@ function createApp(injectedDeps = {}) {
     recommendationService,
     insightService,
     feedbackService,
+    pricingService,
   });
   const digitalTwinController = createDigitalTwinController(digitalTwinService);
   const userManagementController = createUserManagementController(userManagementService);
@@ -172,12 +181,14 @@ function createApp(injectedDeps = {}) {
     cancellationService,
     staffingService,
     bookingLifecycleService,
+    serviceRequestService,
   });
   const guestController = createGuestController({
     guestSelfService,
     resortInfoService,
     conciergeService,
     feedbackService,
+    serviceRequestService,
   });
 
   // Wire Routers

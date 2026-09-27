@@ -5,6 +5,7 @@ const {
   chatBodySchema,
   resortInfoQuerySchema,
   submitFeedbackSchema,
+  createServiceRequestSchema,
 } = require('../validators/guest.validators');
 
 function createGuestRoutes(guestController) {
@@ -18,6 +19,9 @@ function createGuestRoutes(guestController) {
 
   router.get('/feedback/pending', guestController.getPendingFeedback);
   router.post('/feedback/:bookingId', validate(submitFeedbackSchema), guestController.submitFeedback);
+
+  router.get('/service-requests', guestController.listServiceRequests);
+  router.post('/service-requests', validate(createServiceRequestSchema), guestController.createServiceRequest);
 
   return router;
 }

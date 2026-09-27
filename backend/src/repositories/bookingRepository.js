@@ -62,6 +62,21 @@ class BookingRepository {
     return this._mapRow(res.rows[0]);
   }
 
+  /** Most recent CHECKED_IN booking for a guest — used to attach a room to a service request. */
+  async findActiveCheckedInStay(guestId) {
+    const query = `
+      SELECT b.*, r.room_number
+      FROM bookings b
+      LEFT JOIN rooms r ON b.room_id = r.id
+      WHERE b.guest_id = $1 AND b.status = 'CHECKED_IN'
+      ORDER BY b.checked_in_at DESC
+      LIMIT 1;
+    `;
+    const res = await this.pool.query(query, [guestId]);
+    if (res.rows.length === 0) return null;
+    return this._mapRow(res.rows[0]);
+  }
+
   async countCurrentlyOccupiedRooms(todayStr) {
     const query = `
       SELECT COUNT(DISTINCT b.id) as occupied_count
