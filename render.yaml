@@ -1,0 +1,97 @@
+# render.yaml — Smart Resort 360 deployment config
+# Defines all services in one file for Render Blueprint auto-provisioning.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ─── Backend API (Node.js / Express) ──────────────────────────────────────
+  - type: web
+    name: smart-resort-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smart-resort-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "86400"
+      - key: ML_SERVICE_URL
+        value: https://smart-resort-ml.onrender.com/api/v1/ml
+      - key: CORS_ORIGIN
+        value: https://smart-resort-frontend.onrender.com
+      - key: LOG_LEVEL
+        value: info
+      - key: RESORT_TIMEZONE
+        value: Asia/Kolkata
+      - key: RESORT_LATITUDE
+        value: "15.2993"
+      - key: RESORT_LONGITUDE
+        value: "74.1240"
+      - key: RESORT_NAME
+        value: Smart Resort 360
+      - key: WEATHER_API_BASE_URL
+        value: https://api.open-meteo.com/v1/forecast
+      - key: SOCIAL_SIGNAL_QUERY
+        value: Goa weather travel resort
+      - key: LLM_MODEL
+        value: gemini-1.5-flash
+      # Set LLM_API_KEY manually in Render dashboard (secret)
+    healthCheckPath: /api/health
+
+  # ─── ML Service (Python / FastAPI) ────────────────────────────────────────
+  - type: web
+    name: smart-resort-ml
+    runtime: docker
+    rootDir: ml-service
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: "8000"
+    healthCheckPath: /api/v1/ml/health
+
+  # ─── Frontend (Vite / React) ───────────────────────────────────────────────
+  - type: web
+    name: smart-resort-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://smart-resort-backend.onrender.com
+      - key: VITE_USE_MOCKS
+        value: "false"
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  # ─── Booking Site (Vite / React) ──────────────────────────────────────────
+  - type: web
+    name: smart-resort-booking-site
+    runtime: static
+    rootDir: booking-site
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://smart-resort-backend.onrender.com
+      - key: VITE_FRONTEND_URL
+        value: https://smart-resort-frontend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: smart-resort-db
+    databaseName: smart_resort_360
+    plan: free
